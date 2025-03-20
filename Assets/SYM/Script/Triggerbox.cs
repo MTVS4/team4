@@ -23,12 +23,20 @@ public class Triggerbox : MonoBehaviour
 
     public GameObject cube;
 
+
+    // rotate
+    [SerializeField]
+    float eulerAngX;
+    [SerializeField]
+    float eulerAngY;
+    [SerializeField]
+    float eulerAngZ;
+
     
 
     void Awake()
     {
        cubeDecal = decal1.GetComponent<DecalProjector>();
-       cube.GetComponent<MeshRenderer>();
        cube.SetActive(false);
        decal1.SetActive(true);
 
@@ -40,7 +48,11 @@ public class Triggerbox : MonoBehaviour
     void Update()
     {
         //  decalMat1.SetFloat("_power",  Alpha); 
-        //  cubeDecal.material.SetFloat("_Alpha",  decalAlpha);
+        eulerAngX = playerObj.transform.localEulerAngles.x;
+        eulerAngY = playerObj.transform.localEulerAngles.y;
+        eulerAngZ = playerObj.transform.localEulerAngles.z;
+        print(eulerAngX + " " + eulerAngY + " " + eulerAngZ);
+       
          
     }
     private void OnTriggerStay(Collider Player)
@@ -52,8 +64,13 @@ public class Triggerbox : MonoBehaviour
        float truncatedz = Mathf.Floor(z * 10f) / 10f;
        print(truncatedx);
        print(truncatedz);
+
+      //  플레이어 회전값
+      // playerObj.transform.rotation
         
-        if(Player.gameObject.tag =="Trigger")
+
+        //  데칼 끄고 큐브 키기
+        if(playerObj.gameObject.tag =="Trigger")
         {
             Debug.Log("stay");
           playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
@@ -62,11 +79,7 @@ public class Triggerbox : MonoBehaviour
             if (Mathf.Approximately(truncatedx, -0.1f) && Mathf.Approximately(truncatedz, 3.0f))
             {
               print("ture"); 
-            //   while(decalAlpha > 0f)
-            //   {
-            //     decalAlpha -= 0.1f * fadeSpeed * Time.deltaTime;
-            //   }
-            // decalAlpha = 0f;
+          
             cube.SetActive(true);
             decal1.SetActive(false);
             }
