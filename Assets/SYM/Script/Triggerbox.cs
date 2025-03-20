@@ -71,12 +71,12 @@ public class Triggerbox : MonoBehaviour
 
         //  데칼 끄고 큐브 키기
         if(playerObj.gameObject.tag =="Trigger")
-        {
+        { 
             Debug.Log("stay");
           playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
         }
             
-            if (Mathf.Approximately(truncatedx, -0.1f) && Mathf.Approximately(truncatedz, 3.0f))
+            if (Mathf.Approximately(truncatedx, 0.5f) && Mathf.Approximately(truncatedz, 1.0f))
             {
               print("ture"); 
           
