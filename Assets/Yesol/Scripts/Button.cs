@@ -55,10 +55,10 @@ public class Button : MonoBehaviour
     IEnumerator MoveDoor(Vector3 targetPosition) // 문 목표 위치로 이동하는 코루틴 
     {
         // 문이 목표 위치로 거의 도달할 때까지 반복
-        while (Vector3.Distance(door.transform.position, targetPosition) > 0.01f) 
+        while (Vector3.Distance(door.transform.position, targetPosition) > 0) 
         {
             // Lerp로 부드럽게 이동 : (시작, 끝, 시간)
-            door.transform.position = Vector3.Lerp(door.transform.position, targetPosition, slideSpeed * Time.deltaTime);
+            door.transform.position = Vector3.MoveTowards(door.transform.position, targetPosition, slideSpeed * Time.deltaTime);
             yield return null; // 다음 프레임까지 대기 (프레임마다 반복 실행)
         }
 
