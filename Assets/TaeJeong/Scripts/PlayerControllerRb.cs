@@ -33,7 +33,7 @@ public class PlayerControllerRb : MonoBehaviour
    private void Start()
    {
       playerRb = GetComponent<Rigidbody>();
-      playerRb.freezeRotation = true;
+      playerRb.freezeRotation = false;
       //1인칭 캐릭터니까 메인 카메라 플레이어에 받아오기
       cameraTransform = Camera.main.transform;
         
@@ -48,8 +48,7 @@ public class PlayerControllerRb : MonoBehaviour
       float vertical = Input.GetAxis("Vertical"); // 수직값
       
       Vector3 moveVec = transform.forward * vertical + transform.right * horizontal;
-
-      // 이동 벡터를 정규화하여 이동 속도와 시간 간격을 곱한 후 현재 위치에 더함
+      
       transform.position +=  moveSpeed * Time.deltaTime * moveVec.normalized;
       
       

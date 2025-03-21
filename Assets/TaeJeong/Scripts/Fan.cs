@@ -27,9 +27,8 @@ public class Fan : MonoBehaviour
         
         if(otherRb != null)
         {
-            // 팬의 forward 방향을 바람 방향으로 사용 (필요에 따라 조절 가능)
+           
             Vector3 windDirection = -transform.forward;
-            // 객체의 질량에 따라 힘을 조절하거나, 거리 보정 등을 추가할 수 있습니다.
             otherRb.AddForce(windDirection * windForce, ForceMode.Acceleration);
             
         }

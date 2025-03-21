@@ -71,7 +71,6 @@ public class PickResize : MonoBehaviour
                     var bound = target.GetComponent<Collider>().bounds.size;
                     originalBoundSize = new Vector3(bound.x, bound.z, bound.y);
                     originalYRotation = target.localEulerAngles.y - transform.localEulerAngles.y;
-                    // rotOffset = Quaternion.inverse(Quaternion.Inverse(transform.rotation) * transform.rotation);
                     originalLayer = target.gameObject.layer;
                     target.gameObject.layer = enabledLayer;
                     isLerping = enableLerp;
