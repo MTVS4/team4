@@ -48,7 +48,7 @@ public class Triggerbox : MonoBehaviour
         eulerAngX = playerObj.transform.localEulerAngles.x;
         eulerAngY = playerObj.transform.localEulerAngles.y;
         eulerAngZ = playerObj.transform.localEulerAngles.z;
-        print(eulerAngX + " " + eulerAngY + " " + eulerAngZ);
+        // print(eulerAngX + " " + eulerAngY + " " + eulerAngZ);
        
          
     }
@@ -61,7 +61,7 @@ public class Triggerbox : MonoBehaviour
        float truncatedz = Mathf.Floor(z * 100f) / 100f;
  
         //  데칼 끄고 큐브 키기
-        if(playerObj.gameObject.tag =="Trigger")
+        if(Player.gameObject.tag =="Trigger")
         { 
           //  히트존으로 보정정
           playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
