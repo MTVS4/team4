@@ -12,33 +12,33 @@ public class Triggerbox : MonoBehaviour
     public GameObject decal1;
     public Transform playerObj;
     public GameObject cube;
-    public float playerSpeed = 1f;
-    float x,z;
-    public float Alpha;
-    public float decalAlpha;
-    public Material decalMat1;
-    DecalProjector cubeDecal;
-    public float fadeSpeed;
-    
-    // camera rotate
+    public float playerSpeed = 2f;
+    private float x,z;
+    private float truncatedx, truncatedz;
+  // DecalProjector cubeDecal;
+
+  //  부동소수점 비교 오차 보정 변수
+  private float pointPositonX = 0.51f, pointPositonZ = 1.04f;
+  private float errorDistance = 0.01f;
+
+
+  // camera rotate
+  [SerializeField]
+    private float eulerAngX;
     [SerializeField]
-    float eulerAngX;
+    private float eulerAngY;
     [SerializeField]
-    float eulerAngY;
-    [SerializeField]
-    float eulerAngZ;
+    private float eulerAngZ;
 
     
 
     void Awake()
     {
-       cubeDecal = decal1.GetComponent<DecalProjector>();
+      //  cubeDecal = decal1.GetComponent<DecalProjector>();
        cube.SetActive(false);
        decal1.SetActive(true);
 
-       Alpha = 1;
-       decalAlpha = 1;
-       
+             
     }
 
     void Update()
@@ -57,8 +57,8 @@ public class Triggerbox : MonoBehaviour
         // 트리거 박스 플레이어 위치 보정  
        x = playerObj.transform.position.x;
        z = playerObj.transform.position.z;
-       float truncatedx = Mathf.Floor(x * 100f) / 100f;
-       float truncatedz = Mathf.Floor(z * 100f) / 100f;
+       truncatedx = Mathf.Floor(x * 100f) / 100f;
+       truncatedz = Mathf.Floor(z * 100f) / 100f;
  
         //  데칼 끄고 큐브 키기
         if(Player.gameObject.tag =="Trigger")
@@ -67,16 +67,20 @@ public class Triggerbox : MonoBehaviour
           playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
         }
             
-            if (Mathf.Approximately(truncatedx, 0.51f) && Mathf.Approximately(truncatedz, 1.04f) && 155 < eulerAngY && eulerAngY < 205)
+            if (Mathf.Approximately(truncatedx, pointPositonX) && Mathf.Approximately(truncatedz, pointPositonZ) && 155 < eulerAngY && eulerAngY < 205)
             {
               print("ture"); 
-          
               cube.SetActive(true);
               decal1.SetActive(false);
               Destroy(this.gameObject);
             }
             
     }
+
+  private bool IsCloseEnough(float Trigger, float target)
+  {
+    return Mathf.Abs(Trigger - target) < errorDistance;
+  }
 
 }
 
