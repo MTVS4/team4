@@ -52,54 +52,74 @@ public class PickResize : MonoBehaviour
     }
  
     void HandleInput()
+{
+    if (Input.GetMouseButtonDown(0))
     {
-        if (Input.GetMouseButtonDown(0))
+        if (target == null)
         {
-            if (target == null)
-            {
-                RaycastHit hit;
-                if (Physics.Raycast(transform.position, transform.forward, out hit, maxScaleDistance, targetMask))
-                {
-                    lerpStart = Time.time;
-                    target = hit.transform;
-                    Physics.IgnoreCollision(target.GetComponent<Collider>(), playerObj.GetComponent<Collider>(), true);
-                    Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), true);
-                    startDirectionOffset = (target.position - transform.position).normalized - transform.forward;
-                    target.GetComponent<Rigidbody>().isKinematic = true;
-                    originalDistance = Vector3.Distance(transform.position, target.position);
-                    originalSize = target.localScale;
-                    var bound = target.GetComponent<Collider>().bounds.size;
-                    originalBoundSize = new Vector3(bound.x, bound.z, bound.y);
-                    originalYRotation = target.localEulerAngles.y - transform.localEulerAngles.y;
-                    originalLayer = target.gameObject.layer;
-                    target.gameObject.layer = enabledLayer;
-                    isLerping = enableLerp;
-                }
-            }
-            else
-            {
-                target.GetComponent<Rigidbody>().isKinematic = false;
-                Physics.IgnoreCollision(target.GetComponent<Collider>(), playerObj.GetComponent<Collider>(), false);
-                Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), false);
-                pcs.mouseSensitivity = initialSens;
-                target.gameObject.layer = originalLayer;
-                target = null;
-            }
-        }
+            // Ground 레이어에 해당하는 Raycast (Ground 태그 대신 Ground 레이어를 사용하는 것이 더 안정적일 수 있습니다.)
+            int groundLayer = LayerMask.NameToLayer("Ground");
+            int groundLayerMask = 1 << groundLayer;
+            RaycastHit groundHit;
+            bool hitGround = Physics.Raycast(transform.position, transform.forward, out groundHit, maxScaleDistance, groundLayerMask);
 
-        if (Input.GetMouseButton(1) && target != null)
-        {
-            RotateObj();
-        } else if (target != null)
-        {
-            pcs.mouseSensitivity = initialSens;
-        }
+            // 대상(Target)을 위한 Raycast
+            RaycastHit targetHit;
+            bool hitTarget = Physics.Raycast(transform.position, transform.forward, out targetHit, maxScaleDistance, targetMask);
 
-        if (Input.GetMouseButtonUp(1) && target != null)
-        {
+            // 만약 대상 히트가 없다면 아무것도 하지 않음
+            if (!hitTarget)
+                return;
+
+            // 만약 Ground가 먼저 충돌되었다면(즉, groundHit가 있고 거리가 더 짧다면) 픽업 취소
+            if (hitGround && groundHit.distance < targetHit.distance)
+            {
+                return;
+            }
+
+            // 픽업 진행
+            lerpStart = Time.time;
+            target = targetHit.transform;
+            Physics.IgnoreCollision(target.GetComponent<Collider>(), playerObj.GetComponent<Collider>(), true);
+            Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), true);
+            startDirectionOffset = (target.position - transform.position).normalized - transform.forward;
+            target.GetComponent<Rigidbody>().isKinematic = true;
+            originalDistance = Vector3.Distance(transform.position, target.position);
+            originalSize = target.localScale;
+            var bound = target.GetComponent<Collider>().bounds.size;
+            originalBoundSize = new Vector3(bound.x, bound.z, bound.y);
             originalYRotation = target.localEulerAngles.y - transform.localEulerAngles.y;
+            originalLayer = target.gameObject.layer;
+            target.gameObject.layer = enabledLayer;
+            isLerping = enableLerp;
+        }
+        else
+        {
+            target.GetComponent<Rigidbody>().isKinematic = false;
+            Physics.IgnoreCollision(target.GetComponent<Collider>(), playerObj.GetComponent<Collider>(), false);
+            Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), false);
+            pcs.mouseSensitivity = initialSens;
+            target.gameObject.layer = originalLayer;
+            target = null;
         }
     }
+
+    if (Input.GetMouseButton(1) && target != null)
+    {
+        RotateObj();
+    }
+    else if (target != null)
+    {
+        pcs.mouseSensitivity = initialSens;
+    }
+
+    if (Input.GetMouseButtonUp(1) && target != null)
+    {
+        originalYRotation = target.localEulerAngles.y - transform.localEulerAngles.y;
+    }
+}
+
+
 
     private float OutSine(float x)
     {
