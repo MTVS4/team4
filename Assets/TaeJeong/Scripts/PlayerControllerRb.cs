@@ -33,7 +33,7 @@ public class PlayerControllerRb : MonoBehaviour
    private void Start()
    {
       playerRb = GetComponent<Rigidbody>();
-      playerRb.freezeRotation = false;
+      playerRb.freezeRotation = true;
       //1인칭 캐릭터니까 메인 카메라 플레이어에 받아오기
       cameraTransform = Camera.main.transform;
         

@@ -110,7 +110,6 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Resume");
         Time.timeScale = 1;
-        // 마우스 커서를 숨기고, 커서 잠금 설정 (보통 게임플레이 시 사용)
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         hud.SetActive(true);
