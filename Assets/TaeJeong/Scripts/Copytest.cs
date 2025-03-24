@@ -45,7 +45,7 @@ public class Copytest : MonoBehaviour
             foreach (GameObject obj in copies)
             {
                 //obj가 비어있지 않고 비교한 태그가 Original 이라면
-                if(obj != null && gameObject.CompareTag("Original"))
+                if(obj != null)
                 {
                     // 콜라이더 해제
                     obj.GetComponent<Collider>().enabled = false;
