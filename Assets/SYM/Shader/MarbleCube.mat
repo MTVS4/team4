@@ -68,7 +68,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BalckMarble: 0.3
-    - _Float: 1
+    - _Float: 6.15
     - _Float_1: 1
     - _QueueControl: 0
     - _QueueOffset: 0
