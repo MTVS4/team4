@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class CopyObject : MonoBehaviour
 {
-    public static Vector3 originPosition; // 원본 위치를 모든 오브젝트가 알 수 있게 static으로 설정
-    public static Quaternion originRotation;
+    public Vector3 originPosition; 
 
     public float scale = 0.9f; // 복제되는 크기
     public float speed = 2f; // 사라지는 속도 
@@ -24,7 +23,7 @@ public class CopyObject : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             // 복제된 오브젝트가 이전 오브젝트 앞에 생성되게 밑면 길이 구해주기 
-            float objectLength = GetComponent<Renderer>().bounds.size.z;
+            float objectLength = GetComponent<Renderer>().bounds.size.x;
             // 복제 오브젝트 스폰 위치 : 복제 오브젝트 위치 - 메인 카메라(플레이어 시점) 앞방향 * 오브젝트 밑면 길이
             Vector3 spawnPoint = transform.position - Camera.main.transform.forward * objectLength;
             
