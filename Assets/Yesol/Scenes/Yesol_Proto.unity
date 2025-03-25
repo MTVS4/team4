@@ -900,6 +900,10 @@ PrefabInstance:
       propertyPath: copyObject
       value: 
       objectReference: {fileID: 268857691}
+    - target: {fileID: 8226159407220724229, guid: 8640e4c65e1897d479b4cbcf3bcb532a, type: 3}
+      propertyPath: originObject
+      value: 
+      objectReference: {fileID: 268857691}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1325,6 +1329,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8226159407220724229, guid: 8640e4c65e1897d479b4cbcf3bcb532a, type: 3}
       propertyPath: copyObject
+      value: 
+      objectReference: {fileID: 721554604}
+    - target: {fileID: 8226159407220724229, guid: 8640e4c65e1897d479b4cbcf3bcb532a, type: 3}
+      propertyPath: originObject
       value: 
       objectReference: {fileID: 721554604}
     m_RemovedComponents: []
