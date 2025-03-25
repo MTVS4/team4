@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public Slider bgmSlider;
     private AudioSource audioSource;
     public GameObject optionScreen;
+    [HideInInspector] public bool isFinish;
 
     private void Awake()
     {
@@ -29,16 +30,15 @@ public class GameManager : MonoBehaviour
         }
         
     }
-
-    void Start()
-    {
-        
-    }
-
+    
     void Update()
     {
-        ExitPopUp();
-        InGameESC();
+        if (isFinish == false)
+        {
+            ExitPopUp();
+            InGameESC();
+        }
+       
     }
     
     public void SoundControl()
@@ -116,10 +116,17 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void GameRestart()
+    {
+        SceneManager.LoadScene("StartScene");
+    }
+    
+    
+    
+    
     public void GameFinish()
     {
         gameOverUi.SetActive(true);
         timerUi.SetActive(false);
-        
     }
 }

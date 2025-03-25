@@ -10,7 +10,7 @@ public class PickResize : MonoBehaviour
 {
     // 플레이어 관련 참조
     public GameObject player;           // 플레이어 게임오브젝트 참조
-    public GameObject playerObj;        // 플레이어 충돌 오브젝트 참조
+    //public GameObject playerObj;        // 플레이어 충돌 오브젝트 참조
     public Button button;               // 버튼 참조
 
     // 레이어 및 거리 설정
@@ -92,7 +92,7 @@ public class PickResize : MonoBehaviour
                 target = targetHit.transform;
 
                 // 대상과 플레이어, 버튼 간 충돌 무시 설정
-                Physics.IgnoreCollision(target.GetComponent<Collider>(), playerObj.GetComponent<Collider>(), true);
+                Physics.IgnoreCollision(target.GetComponent<Collider>(), player.GetComponent<Collider>(), true);
                 Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), true);
 
                 // 픽업 시 플레이어와 대상 사이의 방향 오프셋 계산
@@ -118,7 +118,7 @@ public class PickResize : MonoBehaviour
             else
             {
                 target.GetComponent<Rigidbody>().isKinematic = false;
-                Physics.IgnoreCollision(target.GetComponent<Collider>(), playerObj.GetComponent<Collider>(), false);
+                Physics.IgnoreCollision(target.GetComponent<Collider>(), player.GetComponent<Collider>(), false);
                 Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), false);
                 pcs.mouseSensitivity = initialSens;
                 target.gameObject.layer = originalLayer;
