@@ -18,7 +18,8 @@ public class Triggerbox : MonoBehaviour
   // DecalProjector cubeDecal;
 
   //  부동소수점 비교 오차 보정 변수
-  private float pointPositonX = 0.51f, pointPositonZ = 1.04f;
+  // private float pointPositonX = 0.51f, pointPositonZ = 1.04f; 원래 좌표
+  private float pointPositonX = -257.48f, pointPositonZ = -15.95f;
   private float errorDistance = 0.01f;
 
 
@@ -67,7 +68,7 @@ public class Triggerbox : MonoBehaviour
           playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
         }
             
-            if (Mathf.Approximately(truncatedx, pointPositonX) && Mathf.Approximately(truncatedz, pointPositonZ) && 155 < eulerAngY && eulerAngY < 205)
+            if ( IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 155 < eulerAngY && eulerAngY < 205)
             {
               print("ture"); 
               cube.SetActive(true);

@@ -29,7 +29,8 @@ public class TriggerboxText : MonoBehaviour
     private float eulerAngZ;
 
     //  부동소수점 비교 오차 보정 변수
-    private float pointPositonX = -1.04f, pointPositonZ = -6.01f;
+    // private float pointPositonX = -1.04f, pointPositonZ = -6.01f;  원래 좌표표
+    private float pointPositonX = -259.04f, pointPositonZ = -23.01f;
     private float errorDistance =0.01f;
 
 
@@ -73,7 +74,6 @@ public class TriggerboxText : MonoBehaviour
         }
 
     if ( IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 305f < eulerAngY &&  eulerAngY < 355)
-    // if (truncatedx == -1.0f && truncatedz == -6.0f && 305f < eulerAngY &&  eulerAngY < 355)
     {
       print("ture");
 
