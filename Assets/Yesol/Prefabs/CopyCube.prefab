@@ -124,10 +124,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4875cab4783d11c4eb1b8743c45cb793, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  copyObject: {fileID: 0}
-  newObject: {fileID: 0}
+  originPosition: {x: 0, y: 0, z: 0}
   scale: 0.85
-  speed: 2
+  speed: 3
 --- !u!54 &845897414888614432
 Rigidbody:
   m_ObjectHideFlags: 0
