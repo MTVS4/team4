@@ -18,16 +18,16 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
+        //if (instance == null)
+        //{
+            //instance = this;
+            //DontDestroyOnLoad(gameObject);
             audioSource = GetComponent<AudioSource>();
-        }
+        /*}
         else
         {
             Destroy(gameObject);
-        }
+        }*/
         
     }
     
@@ -79,20 +79,27 @@ public class GameManager : MonoBehaviour
 
     void InGameESC()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (player != null)
         {
-            if (optionScreen.activeInHierarchy)
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
+                if (optionScreen.activeInHierarchy)
                 {
-                    GameResume();
-                    optionScreen.SetActive(false);
+                    {
+                        GameResume();
+                        optionScreen.SetActive(false);
+                    }
+                }
+                else
+                {
+                    GamePause();
+                    optionScreen.SetActive(true);
                 }
             }
-            else
-            {
-                GamePause();
-                optionScreen.SetActive(true);
-            }
+        }
+        else
+        {
+            return;
         }
     }
 
@@ -120,9 +127,6 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("StartScene");
     }
-    
-    
-    
     
     public void GameFinish()
     {

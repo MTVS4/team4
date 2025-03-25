@@ -2077,7 +2077,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -2460,18 +2460,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 826712722}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: StartScene
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1288739156}
         m_TargetAssemblyTypeName: AsyncLoader, Assembly-CSharp
         m_MethodName: LoadLevel
@@ -2481,7 +2469,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: WhiteBoxing
+          m_StringArgument: Whiteboxing
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &2057104746
@@ -2557,7 +2545,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 60.30005, y: 60.327026}
+  m_AnchoredPosition: {x: 60.300293, y: 60.326904}
   m_SizeDelta: {x: 300, y: 60}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &2079363552
@@ -2667,9 +2655,21 @@ PrefabInstance:
       value: GameManager
       objectReference: {fileID: 0}
     - target: {fileID: 6012467083283190503, guid: b5958cfa2f6fb024c872d305f847feab, type: 3}
+      propertyPath: hud
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6012467083283190503, guid: b5958cfa2f6fb024c872d305f847feab, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6012467083283190503, guid: b5958cfa2f6fb024c872d305f847feab, type: 3}
       propertyPath: bgmSlider
       value: 
       objectReference: {fileID: 682218934}
+    - target: {fileID: 6012467083283190503, guid: b5958cfa2f6fb024c872d305f847feab, type: 3}
+      propertyPath: gameOverUi
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6012467083283190503, guid: b5958cfa2f6fb024c872d305f847feab, type: 3}
       propertyPath: optionScreen
       value: 
@@ -2727,6 +2727,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1300676907013759107, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 1307511065726689939, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
       propertyPath: m_Name
       value: LoadingScreenCanvas
@@ -2735,9 +2739,69 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4792333589794070012, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_Value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1288739156}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LoadLevel
+      objectReference: {fileID: 0}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AsyncLoader, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3325559041133835134, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3995348573681306939, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3995348573681306939, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4792333589794070012, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4792333589794070012, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5642951413516666333, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5642951413516666333, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5796790360592293517, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
       propertyPath: m_Pivot.x
@@ -2819,6 +2883,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7165340650686624954, guid: 0db23f8a81ecf7b46ab652b3f781d99f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2884,6 +2952,14 @@ PrefabInstance:
       propertyPath: loadingSlider
       value: 
       objectReference: {fileID: 342425372}
+    - target: {fileID: 3433291551023523107, guid: 45cb4f39049b6af429616ce257e20339, type: 3}
+      propertyPath: loadingProgress
+      value: 
+      objectReference: {fileID: 342425372}
+    - target: {fileID: 3433291551023523107, guid: 45cb4f39049b6af429616ce257e20339, type: 3}
+      propertyPath: waitChangeDelay
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8027471208853228658, guid: 45cb4f39049b6af429616ce257e20339, type: 3}
       propertyPath: m_Name
       value: ASyncLoader
