@@ -1248,6 +1248,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: CopyCube
       objectReference: {fileID: 0}
+    - target: {fileID: 6446644383705375978, guid: 8640e4c65e1897d479b4cbcf3bcb532a, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 8226159407220724229, guid: 8640e4c65e1897d479b4cbcf3bcb532a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8226159407220724229, guid: 8640e4c65e1897d479b4cbcf3bcb532a, type: 3}
       propertyPath: copyObject
       value: 

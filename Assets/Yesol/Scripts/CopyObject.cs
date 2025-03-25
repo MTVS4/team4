@@ -1,63 +1,80 @@
-using System;
+using System.Collections;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEngine.UI;
 
 public class CopyObject : MonoBehaviour
 {
-    public GameObject copyObject; // 복제된 오브젝트
-    public GameObject newObject;
-    public float scale = 0.9f; // 복제할 오브젝트 크기
-    public float speed = 2.0f; //돌아가는 속도
+    public static Vector3 originPosition; // 원본 위치를 모든 오브젝트가 알 수 있게 static으로 설정
+    public static Quaternion originRotation;
 
-    private void OnMouseOver() // 마우스를 올려놓고 있을 때 
+    public float scale = 0.9f; // 복제되는 크기
+    public float speed = 2f; // 사라지는 속도 
+
+    void Update()
     {
-        // 마우스 좌클릭 시
+        // 원본 오브젝트 위치 계속 업데이트 
+        if (tag != "Copy")
+        {
+            originPosition = transform.position;
+        }
+    }
+
+    private void OnMouseOver()
+    {
+        // 좌클릭 시 복제
         if (Input.GetMouseButtonDown(0))
         {
-            // 오브젝트 밑면 길이 : 오브젝트 바로 앞에 복제 오브젝트가 나오도록 
-            float objectlength = gameObject.GetComponent<Renderer>().bounds.size.z;
-
+            // 복제된 오브젝트가 이전 오브젝트 앞에 생성되게 밑면 길이 구해주기 
+            float objectLength = GetComponent<Renderer>().bounds.size.z;
             // 복제 오브젝트 스폰 위치 : 복제 오브젝트 위치 - 메인 카메라(플레이어 시점) 앞방향 * 오브젝트 밑면 길이
-            Vector3 spawnpoint = gameObject.transform.position - Camera.main.transform.forward * objectlength;
-
-            //복제 오브젝트 (복제할 대상, 복제 위치, 각도)
-            newObject = Instantiate(copyObject, spawnpoint, Quaternion.identity);
-
+            Vector3 spawnPoint = transform.position - Camera.main.transform.forward * objectLength;
+            
+            //복제 오브젝트 (복제할 대상, 복제 위치, 각도) 
+            GameObject newObj = Instantiate(gameObject, spawnPoint, Quaternion.identity);
             // 복제 오브젝트 크기 : 원본 * 0.9배
-            newObject.transform.localScale = copyObject.transform.localScale * scale;
-
-            newObject.tag = "Copy";
-
+            newObj.transform.localScale = transform.localScale * scale;
+            // 복제 오브젝트 태그 
+            newObj.tag = "Copy";
         }
 
+        // 우클릭 시 모든 복제 오브젝트를 원본 위치로 되돌림
         if (Input.GetMouseButtonDown(1))
         {
-            GameObject[] objects = GameObject.FindGameObjectsWithTag("Copy");
-
-            var sort = objects.OrderByDescending
-                (obj => obj.transform.localScale.magnitude).ToList();
-
-            foreach (GameObject obj in sort)
+            // "Copy" 태그 오브젝트 배열로 저장
+            GameObject[] copies = GameObject.FindGameObjectsWithTag("Copy");
+            
+            // copy 태그 오브젝트 = obj 하나씩 반복
+            foreach (GameObject copy in copies)
             {
-                float moveSpeed = speed * obj.transform.localScale.magnitude;
-
-                obj.transform.position = Vector3.MoveTowards
-                (obj.transform.position, gameObject.transform.position,
-                    Time.deltaTime * moveSpeed);
-
-                if (Vector3.Distance(obj.transform.position, gameObject.transform.position) < 0.1f)
+                // obj가 비어있지 않고
+                if (copy != null)
                 {
-                    Destroy(obj);
+                    // 콜라이더 해제 
+                    copy.GetComponent<Collider>().enabled = false;
+                    
+                    // 리지드바디 isKinematic 설정 (물리 영향 x)
+                    copy.GetComponent<Rigidbody>().isKinematic = true;
+                    
+                    /*Rigidbody rb = copy.GetComponent<Rigidbody>();
+                    if (rb != null) rb.isKinematic = true;*/
+
+                    StartCoroutine(MoveBackAndDestroy(copy));
                 }
             }
         }
     }
+
+    IEnumerator MoveBackAndDestroy(GameObject clone) // clone은 복제된 오브젝트
+    {
+        while (Vector3.Distance(clone.transform.position, originPosition) > 0.01f)
+        {
+            // 복제 오브젝트 위치 원본 오브젝트로 
+            clone.transform.position = Vector3.Lerp(clone.transform.position, originPosition, speed * Time.deltaTime);
+            yield return null;
+        }
+        // 한 번 더 조정 
+        clone.transform.position = originPosition;
+        Destroy(clone);
+    }
 }
-    
-
-
 
     
