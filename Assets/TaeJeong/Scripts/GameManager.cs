@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     
     public void StartScene()
     {
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("Whiteboxing");
     }
 
     public void GameExit()
