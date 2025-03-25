@@ -5,7 +5,7 @@ public class ButtonPressed : MonoBehaviour
 {
     private Vector3 originalPosition; // 버튼 원래 위치
     private Vector3 targetPosition;   // 버튼이 이동할 목표 위치
-    public float pressDepth = 0.2f;   // 버튼이 눌리는 깊이
+    public float pressDepth = 0.95f;   // 버튼이 눌리는 깊이
     public float speed = 5f;          // 이동 속도
     private bool isPressed = false;   // 버튼이 현재 눌려 있는지 확인
 

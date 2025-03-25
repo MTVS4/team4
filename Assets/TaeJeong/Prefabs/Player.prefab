@@ -183,6 +183,9 @@ MonoBehaviour:
   cursorDefault: {fileID: 0}
   cursorHand: {fileID: 0}
   cursorGrabbed: {fileID: 0}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!1 &1200748288206030936
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,9 +195,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3956743171840105306}
-  - component: {fileID: 2836395008671778176}
-  - component: {fileID: 8747027407554222824}
-  - component: {fileID: 6165989641670428541}
   - component: {fileID: 5602552731867244759}
   - component: {fileID: 2933507764001372645}
   m_Layer: 3
@@ -221,62 +221,6 @@ Transform:
   - {fileID: 5653709134664756695}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2836395008671778176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200748288206030936}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56ef8d3d3c48b57498e9e843883aec8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 5
-  mouseSensitivity: 500
-  jumpForce: 5
-  gravity: -9.81
---- !u!143 &8747027407554222824
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200748288206030936}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6165989641670428541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200748288206030936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fe4a11bda7981d4eb33f0361849435d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mouseSensitivity: 300
-  moveSpeed: 5
-  jumpForce: 5
 --- !u!54 &5602552731867244759
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -316,9 +260,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe4a11bda7981d4eb33f0361849435d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 300
-  moveSpeed: 5
-  jumpForce: 5
+  mouseSensitivity: 600
+  maxSpeed: 10
+  acceleration: 10
+  deceleration: 20
+  jumpForce: 8
 --- !u!1 &1967301805081717501
 GameObject:
   m_ObjectHideFlags: 0

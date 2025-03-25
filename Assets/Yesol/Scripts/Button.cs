@@ -12,12 +12,20 @@ public class Button : MonoBehaviour
     private Vector3 openedPosition;  // 문이 열린 위치
     private Coroutine moveCoroutine; // 현재 실행 중인 코루틴
     
-
     void Start()
     {
         // 초기 위치 저장
         closedPosition = door.transform.position;
-        openedPosition = closedPosition - new Vector3(slideDistance, 0, 0);
+
+        //문 설치 방향에 따라 열리는 방향 다르게
+        if (door.transform.eulerAngles.y < 180 && door.transform.eulerAngles.y > 0)
+        {
+            openedPosition = closedPosition - new Vector3(0, 0, slideDistance);
+        }
+        else
+        {
+            openedPosition = closedPosition - new Vector3(slideDistance, 0, 0);
+        }
     }
 
     void OnTriggerStay(Collider col) //트리거 충돌 시 실행 함수 
@@ -49,8 +57,6 @@ public class Button : MonoBehaviour
         // 새롭게 이동 코루틴 실행
         moveCoroutine = StartCoroutine(MoveDoor(targetPosition));
     }
-    
-    
 
     IEnumerator MoveDoor(Vector3 targetPosition) // 문 목표 위치로 이동하는 코루틴 
     {
