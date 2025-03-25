@@ -9,10 +9,12 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [SerializeField] private PlayerControllerRb player;
     [SerializeField] private GameObject hud;
-    public float time;
+    [SerializeField] private GameObject gameOverUi;
+    [SerializeField] private GameObject timerUi;
     public Slider bgmSlider;
     private AudioSource audioSource;
     public GameObject optionScreen;
+    [HideInInspector] public bool isFinish;
 
     private void Awake()
     {
@@ -28,17 +30,15 @@ public class GameManager : MonoBehaviour
         }
         
     }
-
-    void Start()
-    {
-        
-    }
-
+    
     void Update()
     {
-        time += Time.deltaTime;
-        ExitPopUp();
-        InGameESC();
+        if (isFinish == false)
+        {
+            ExitPopUp();
+            InGameESC();
+        }
+       
     }
     
     public void SoundControl()
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     
     public void StartScene()
     {
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("TaeJeong/Scenes/Whiteboxing");
     }
 
     public void GameExit()
@@ -114,5 +114,19 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         hud.SetActive(true);
 
+    }
+
+    public void GameRestart()
+    {
+        SceneManager.LoadScene("StartScene");
+    }
+    
+    
+    
+    
+    public void GameFinish()
+    {
+        gameOverUi.SetActive(true);
+        timerUi.SetActive(false);
     }
 }

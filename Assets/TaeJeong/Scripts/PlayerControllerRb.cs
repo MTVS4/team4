@@ -7,6 +7,7 @@ public class PlayerControllerRb : MonoBehaviour
     private float xRotation;
     private Camera cam;
     private Transform cameraTransform;
+    [SerializeField] private GameManager gameManager;
 
     [Header("Movement Settings")]
     [SerializeField] private float maxSpeed = 5f;         
@@ -14,6 +15,29 @@ public class PlayerControllerRb : MonoBehaviour
     [SerializeField] private float deceleration = 20f;      // 감속도
     [SerializeField] private float jumpForce = 8f;
     private bool isGrounded = true;
+    private bool isFinish;
+
+
+    /// 유니티 에디터에서 시작할 때 자동으로 커서가 사라지게 하는 코드
+    void Awake()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+#if UNITY_EDITOR
+        var gameWindow =
+            UnityEditor.EditorWindow.GetWindow(
+                typeof(UnityEditor.EditorWindow).Assembly.GetType("UnityEditor.GameView"));
+        gameWindow.Focus();
+        gameWindow.SendEvent(new Event
+        {
+            button = 0,
+            clickCount = 1,
+            type = EventType.MouseDown,
+            mousePosition = gameWindow.rootVisualElement.contentRect.center
+        });
+#endif
+    }
 
     private void Start()
     {
@@ -22,9 +46,32 @@ public class PlayerControllerRb : MonoBehaviour
         cameraTransform = Camera.main.transform;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        isFinish = false;
     }
 
     private void Update()
+    {
+        MouseMovement();
+        if (!isFinish)
+        {
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                Jump();
+            }
+        }
+    }
+
+    
+
+    private void FixedUpdate()
+    {
+        if (!isFinish)
+        {
+            PlayerMovement();
+        }
+    }
+    
+    void MouseMovement()
     {
         // 마우스 입력에 따른 회전 처리
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
@@ -37,15 +84,8 @@ public class PlayerControllerRb : MonoBehaviour
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-
-        // 점프 입력 처리
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            Jump();
-        }
     }
-
-    private void FixedUpdate()
+    void PlayerMovement()
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
@@ -77,11 +117,27 @@ public class PlayerControllerRb : MonoBehaviour
         }
 
         isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f);
+        // 점프 입력 처리
+        
     }
 
     void Jump()
     {
         playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         isGrounded = false;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Finish"))
+        {
+            Debug.Log("Finish");    
+            gameManager.GameFinish();
+            isFinish = true;
+            gameManager.isFinish = true;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+        }
     }
 }
