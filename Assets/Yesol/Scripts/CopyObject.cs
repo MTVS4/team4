@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class CopyObject : MonoBehaviour
 {
-    public GameObject originObject; // 원본 오브젝트
-    public float scale = 0.9f; // 복제 오브젝트 크기 비율 
-    public float speed = 2f; // 원본 오브젝트로 들어가는 속도 
+    public GameObject originObject;
+    public float scale = 0.9f; 
+    public float speed = 2f;
     
     private void OnMouseOver()
     {
