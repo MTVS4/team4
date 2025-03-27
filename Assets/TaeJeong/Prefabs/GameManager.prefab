@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7837266914851271646}
   - component: {fileID: 6012467083283190503}
   - component: {fileID: 208566849402803888}
-  - component: {fileID: 2135649761007695517}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -46,10 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a0d478949a857c49894ae21a713d36c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  time: 0
+  player: {fileID: 2933507764001372645, guid: d11ff46f3c60b5c4484271a69be27cc8, type: 3}
+  hud: {fileID: 5275158804940248533, guid: dc5825b4f9d53ed4494c2eb80d5dd796, type: 3}
+  gameOverUi: {fileID: 5570698050627947705, guid: 8345bd1997f709343b7dc1da3ec70f55, type: 3}
+  timerUi: {fileID: 0}
   bgmSlider: {fileID: 0}
-  optionScreen: {fileID: 0}
+  optionScreen: {fileID: 2136680417614260769, guid: 090a387500154734c9276906940ed7b1, type: 3}
+  isFinish: 0
 --- !u!82 &208566849402803888
 AudioSource:
   m_ObjectHideFlags: 0
@@ -147,18 +149,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &2135649761007695517
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3869839411265595700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca6c970e81e66c4459a8fb27effe8ec9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  loadingScreen: {fileID: 0}
-  startScreen: {fileID: 0}
-  loadingSlider: {fileID: 0}

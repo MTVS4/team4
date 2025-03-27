@@ -9,36 +9,36 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [SerializeField] private PlayerControllerRb player;
     [SerializeField] private GameObject hud;
-    public float time;
+    [SerializeField] private GameObject gameOverUi;
+    [SerializeField] private GameObject timerUi;
     public Slider bgmSlider;
     private AudioSource audioSource;
     public GameObject optionScreen;
+    [HideInInspector] public bool isFinish;
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
+        //if (instance == null)
+        //{
+            //instance = this;
+            //DontDestroyOnLoad(gameObject);
             audioSource = GetComponent<AudioSource>();
-        }
+        /*}
         else
         {
             Destroy(gameObject);
-        }
+        }*/
         
     }
-
-    void Start()
-    {
-        
-    }
-
+    
     void Update()
     {
-        time += Time.deltaTime;
-        ExitPopUp();
-        InGameESC();
+        if (isFinish == false)
+        {
+            ExitPopUp();
+            InGameESC();
+        }
+       
     }
     
     public void SoundControl()
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     
     public void StartScene()
     {
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("TaeJeong/Scenes/Whiteboxing");
     }
 
     public void GameExit()
@@ -79,20 +79,27 @@ public class GameManager : MonoBehaviour
 
     void InGameESC()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (player != null)
         {
-            if (optionScreen.activeInHierarchy)
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
+                if (optionScreen.activeInHierarchy)
                 {
-                    GameResume();
-                    optionScreen.SetActive(false);
+                    {
+                        GameResume();
+                        optionScreen.SetActive(false);
+                    }
+                }
+                else
+                {
+                    GamePause();
+                    optionScreen.SetActive(true);
                 }
             }
-            else
-            {
-                GamePause();
-                optionScreen.SetActive(true);
-            }
+        }
+        else
+        {
+            return;
         }
     }
 
@@ -114,5 +121,16 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         hud.SetActive(true);
 
+    }
+
+    public void GameRestart()
+    {
+        SceneManager.LoadScene("StartScene");
+    }
+    
+    public void GameFinish()
+    {
+        gameOverUi.SetActive(true);
+        timerUi.SetActive(false);
     }
 }
