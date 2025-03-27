@@ -12,7 +12,7 @@ public class CopyObject : MonoBehaviour
         // 마우스 좌클릭 -> 복제
         if (Input.GetMouseButtonDown(0))
         {
-            // 오브젝트 밑변 길이 (복제 오브젝트가 이전 오브젝트 앞에 생성되게 하기위해)
+            // 오브젝트 밑변 "길이" (복제 오브젝트가 이전 오브젝트 앞에 생성되게 하기위해)
             float objectLength = GetComponent<Renderer>().bounds.size.x;
             // 복제 오브젝트 스폰 위치 = 현재 오브젝트 위치 - 카메라 앞 방향 * 이전 오브젝트 길이 
             Vector3 spawnPoint = transform.position - Camera.main.transform.forward * objectLength;
