@@ -50,7 +50,7 @@ public class TriggerboxText : MonoBehaviour
         eulerAngY = playerObj2.transform.localEulerAngles.y;
         eulerAngZ = playerObj2.transform.localEulerAngles.z;
     // print(eulerAngX + " " + eulerAngY + " " + eulerAngZ);
-    Debug.Log(playerObj2.transform.position);
+    // Debug.Log(playerObj2.transform.position);
 
 
 

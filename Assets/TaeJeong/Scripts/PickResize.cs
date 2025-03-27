@@ -10,7 +10,6 @@ public class PickResize : MonoBehaviour
 {
     // 플레이어 관련 참조
     public GameObject player;           // 플레이어 게임오브젝트 참조
-    //public GameObject playerObj;        // 플레이어 충돌 오브젝트 참조
     public Button button;               // 버튼 참조
 
     // 레이어 및 거리 설정
@@ -41,6 +40,9 @@ public class PickResize : MonoBehaviour
     private Quaternion rotOffset;       // 회전 오프셋 (현재 코드에서는 사용하지 않음)
     const float pi = 3.141592653589793238f; // 파이 상수
 
+    public bool isPick;                 // BlockDoor에서 사용할 물체 잡았는지 확인하는 변수
+    public bool isOverlapDoor;
+
     // 초기 설정: 플레이어 컨트롤러와 마우스 민감도 저장
     void Start()
     {
@@ -51,7 +53,10 @@ public class PickResize : MonoBehaviour
     // 매 프레임 입력 처리
     void Update()
     {
-        HandleInput();
+        if (!isOverlapDoor)
+        {
+            HandleInput();
+        }
     }
 
     // 모든 Update 후 대상의 위치와 스케일을 조정
@@ -60,10 +65,9 @@ public class PickResize : MonoBehaviour
         ResizeTarget();
     }
 
-    /// <summary>
-    /// HandleInput: 입력에 따라 대상 픽업 및 드롭, 회전 처리를 합니다.
-    /// </summary>
-    void HandleInput()
+
+    // HandleInput: 입력에 따라 대상 픽업 및 드롭, 회전 처리를 합니다.
+    public void HandleInput()
     {
         // 왼쪽 마우스 버튼 클릭 시
         if (Input.GetMouseButtonDown(0))
@@ -113,6 +117,9 @@ public class PickResize : MonoBehaviour
                 target.gameObject.layer = enabledLayer;
                 // 보간(lerp) 적용 여부 설정
                 isLerping = enableLerp;
+                
+                // 오브젝트 잡았음
+                isPick = true;
             }
             // 이미 대상이 픽업된 상태이면 드롭(해제) 처리
             else
@@ -123,6 +130,9 @@ public class PickResize : MonoBehaviour
                 pcs.mouseSensitivity = initialSens;
                 target.gameObject.layer = originalLayer;
                 target = null;
+                
+                // 오브젝트 놓았음
+                isPick = false;
             }
         }
 
@@ -144,37 +154,26 @@ public class PickResize : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// OutSine: 보간 진행 정도를 부드럽게 조절하는 이징 함수
-    /// </summary>
-    /// <param name="x">진행 비율 (0 ~ 1)</param>
-    /// <returns>조절된 진행 비율</returns>
     private float OutSine(float x)
     {
         return (x > 1f) ? 1f : Mathf.Sin(0.5f * pi * x);
     }
-
-    /// <summary>
-    /// ResizeTarget: 픽업된 대상의 위치와 크기를 업데이트합니다.
-    /// </summary>
+    
     private void ResizeTarget()
     {
         if (target == null)
             return;
-
-        // 플레이어의 forward 방향으로 BoxCast를 통해 대상의 새 위치 계산
+        
         Vector3 targetPos = BoxCast(transform.forward);
         
         if (isLerping)
         {
-            // 보간 진행 비율 계산
             float lerpPercentage = (Time.time - lerpStart) / lerpTime;
             if (lerpPercentage > 1)
             {
                 lerpPercentage = 1;
-                isLerping = false; // 보간 완료 시 보간 종료
+                isLerping = false; 
             }
-            // 시작 오프셋을 반영한 시작 위치 계산
             Vector3 startPos = BoxCast(transform.forward + startDirectionOffset);
             float progress = OutSine(lerpPercentage);
             target.position = Vector3.Lerp(startPos, targetPos, progress);
@@ -185,14 +184,10 @@ public class PickResize : MonoBehaviour
         }
         // 플레이어와의 거리에 따라 대상 스케일 업데이트
         target.localScale = CalcScale(target.position, originalSize);
+        
     }
-
-    /// <summary>
-    /// CalcScale: 플레이어와 대상 간의 거리 비례로 대상의 스케일을 계산합니다.
-    /// </summary>
-    /// <param name="tarPos">대상의 현재 위치</param>
-    /// <param name="originalSize">대상의 원래 로컬 스케일</param>
-    /// <returns>계산된 스케일</returns>
+    
+    // 새로운 스케일 = (현재 거리 / 초기 거리) × 원래 스케일
     private Vector3 CalcScale(Vector3 tarPos, Vector3 originalSize)
     {
         float currentDistance = Vector3.Distance(transform.position, tarPos);
@@ -200,9 +195,7 @@ public class PickResize : MonoBehaviour
         return scale * originalSize;
     }
 
-    /// <summary>
-    /// RotateObj: 오른쪽 마우스 버튼 입력에 따라 대상의 회전을 조작합니다.
-    /// </summary>
+    // 오브젝트 회전 시키기
     private void RotateObj()
     {
         // 회전 중에는 플레이어의 마우스 민감도를 0으로 하여 카메라 회전 영향 배제
@@ -213,12 +206,7 @@ public class PickResize : MonoBehaviour
                                                target.localEulerAngles.z);
     }
 
-    /// <summary>
-    /// BoxCast: OverlapBox를 사용해 플레이어 forward 방향상의 적절한 대상 위치를 찾습니다.
-    /// 먼저 전진하며 충돌이 발생한 지점을 찾고, 이후 역방향으로 이동하여 충돌이 해소되는 경계 위치를 반환합니다.
-    /// </summary>
-    /// <param name="Direction">플레이어 forward 또는 오프셋 포함 방향</param>
-    /// <returns>계산된 위치</returns>
+    // 박스캐스트로 장애물 보다 앞으로 오도록
     private Vector3 BoxCast(Vector3 Direction)
     {
         // 초기 박스 중심: 플레이어 위치에서 Direction 방향으로 0.5만큼 떨어진 위치
@@ -245,4 +233,6 @@ public class PickResize : MonoBehaviour
         }
         return boxCenter;
     }
+    
+    
 }
