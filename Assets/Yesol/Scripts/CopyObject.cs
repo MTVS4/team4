@@ -79,8 +79,12 @@ public class CopyObject : MonoBehaviour
             clone.transform.position = Vector3.Lerp(clone.transform.position, targetPos, speed * Time.deltaTime);
             yield return null;
         }
-        // 다시 한 번 위치 시키고 삭제 
-        clone.transform.position = targetPos;
-        Destroy(clone);
+        
+        if (clone != null)
+        {
+            clone.transform.position = targetPos;
+            Destroy(clone);
+        }
+        
     }
 }

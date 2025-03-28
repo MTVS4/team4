@@ -1,9 +1,16 @@
+using System;
 using UnityEngine;
 using System.Collections;
 
 public class Button : MonoBehaviour
 {
     public GameObject door;  
+    public GameObject exit;
+    private float green;
+    private float red = 3f;
+    private Renderer renderer;
+    private Material material;
+    
     public float slideDistance = 5f;  // 문이 움직이는 거리
     public float slideSpeed = 2f;  // 문이 움직이는 속도
 
@@ -11,6 +18,12 @@ public class Button : MonoBehaviour
     private Vector3 closedPosition;  // 문이 닫힌 위치
     private Vector3 openedPosition;  // 문이 열린 위치
     private Coroutine moveCoroutine; // 현재 실행 중인 코루틴
+
+    void Awake()
+    {
+        renderer = exit.GetComponent<Renderer>();
+        material = renderer.materials[1];
+    }
     
     void Start()
     {
@@ -26,6 +39,13 @@ public class Button : MonoBehaviour
         {
             openedPosition = closedPosition - new Vector3(slideDistance, 0, 0);
         }
+        
+    }
+
+    private void Update()
+    {
+        material.SetFloat("_GreenEmissive" , green);
+        material.SetFloat("_RedEmissive" , red);
     }
 
     void OnTriggerStay(Collider col) //트리거 충돌 시 실행 함수 
@@ -34,6 +54,8 @@ public class Button : MonoBehaviour
         {
             isOpened = true; // 한번 실행하고 끝남 (다시 버튼을 눌러도 중복 실행 방지)
             StartMovingDoor(openedPosition); // 문을 열기 시작 : 코루틴 실행 
+            red = 0f;
+            green = 3f;
         }
     }
 
@@ -42,7 +64,9 @@ public class Button : MonoBehaviour
         if (isOpened) //문이 열려있으면 
         {
             isOpened = false;
-            StartMovingDoor(closedPosition); // 문을 닫기 시작 : 코루틴 실행 
+            StartMovingDoor(closedPosition); // 문을 닫기 시작 : 코루틴 실행
+            red = 3f;
+            green = 0f;
         }
     }
 
