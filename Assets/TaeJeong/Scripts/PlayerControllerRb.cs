@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerControllerRb : MonoBehaviour
+public class PlayerControllerRb : PortalTraveller
 {
     private Rigidbody playerRb;
     public float mouseSensitivity = 100f;
@@ -16,6 +16,11 @@ public class PlayerControllerRb : MonoBehaviour
     [SerializeField] private float jumpForce = 8f;
     private bool isGrounded = true;
     private bool isFinish;
+
+    // 위치동기화 변수 
+    Vector3 velocity;
+    public float yaw;
+    float smoothYaw;
 
 
     /// 유니티 에디터에서 시작할 때 자동으로 커서가 사라지게 하는 코드
@@ -139,5 +144,18 @@ public class PlayerControllerRb : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
 
         }
+    }
+
+
+    //  위치 동기화
+      public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {
+        transform.position = pos;
+        Vector3 eulerRot = rot.eulerAngles;
+        float delta = Mathf.DeltaAngle (smoothYaw, eulerRot.y);
+        yaw += delta;
+        smoothYaw += delta;
+        transform.eulerAngles = Vector3.up * smoothYaw;
+        velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
+        Physics.SyncTransforms ();
     }
 }
