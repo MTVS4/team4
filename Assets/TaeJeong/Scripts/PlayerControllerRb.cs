@@ -18,12 +18,12 @@ public class PlayerControllerRb : MonoBehaviour
     private bool isFinish;
 
 
-    /// 유니티 에디터에서 시작할 때 자동으로 커서가 사라지게 하는 코드
     void Awake()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
+    /// 유니티 에디터에서 시작할 때 자동으로 커서가 사라지게 하는 코드
 #if UNITY_EDITOR
         var gameWindow =
             UnityEditor.EditorWindow.GetWindow(
