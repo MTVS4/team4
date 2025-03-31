@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 945f44f69aeb55d47802759f9f1ccddb
+guid: 651f0eda4f8063f47b633acebe1f1113
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -8,6 +8,11 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material.002
+    second: {fileID: 2100000, guid: 83e551781a6bd4640a3102964ba00d81, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Panel_Mat
     second: {fileID: 2100000, guid: 83e551781a6bd4640a3102964ba00d81, type: 2}
   materials:
     materialImportMode: 2
