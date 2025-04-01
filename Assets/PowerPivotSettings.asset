@@ -35,7 +35,7 @@ MonoBehaviour:
   UpdateCursorWithObject: 1
   ShowParentingButtons: 0
   AutoRefreshModelsWithModifiedPivots: 0
-  WindowPosition: {x: 905, y: 478}
+  WindowPosition: {x: 987, y: 414}
   GizmoOpacity: 1
   GizmoColorA: {r: 1, g: 0, b: 0, a: 1}
   GizmoColorB: {r: 1, g: 1, b: 1, a: 1}

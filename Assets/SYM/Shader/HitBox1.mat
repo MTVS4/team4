@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HitBox
+  m_Name: HitBox1
   m_Shader: {fileID: -6465566751694194690, guid: d1351c01e8bf9654986928c25379b6e2, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -41,7 +41,8 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _power: 1
-    m_Colors: []
+    m_Colors:
+    - _Color: {r: 1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &4488665925411026806
