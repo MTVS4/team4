@@ -19,6 +19,9 @@ public class CopyObject : MonoBehaviour
             
             // 현재 오브젝트 복제해서 새 오브젝트(복제할 오브젝트) 생성 
             GameObject newObj = Instantiate(gameObject, spawnPoint, Quaternion.identity);
+            
+            newObj.layer = LayerMask.NameToLayer("CopyLayer");
+            
             // 복제 오브젝트 크기 = 원본 오브젝트 * 0.9
             newObj.transform.localScale = transform.localScale * scale;
             // 복제 오브젝트 태그 설정 
@@ -51,8 +54,6 @@ public class CopyObject : MonoBehaviour
                     // trueOrigin에서 파생된 복제본이면 
                     if (copyScript.originObject == trueOrigin)
                     {
-                        // 물리 충돌 제거 (이동 중 충돌 방지)
-                        copy.GetComponent<Collider>().enabled = false;
                         // 리지드바디 키네마틱 설정 (물리 영향 x)
                         copy.GetComponent<Rigidbody>().isKinematic = true;
                         
@@ -73,10 +74,11 @@ public class CopyObject : MonoBehaviour
         Vector3 targetPos = cloneScript.originObject.transform.position;
 
         // 현재 위치, 목표 위치 가까워질 때까지 반복 
-        while (Vector3.Distance(clone.transform.position, targetPos) > 0.01f)
+        while (Vector3.Distance(clone.transform.position, targetPos) > 0.1f)
         {
             // 현재 위치를 목표 위치로 이동 
             clone.transform.position = Vector3.Lerp(clone.transform.position, targetPos, speed * Time.deltaTime);
+            clone.transform.localScale = Vector3.Lerp(clone.transform.localScale, cloneScript.originObject.transform.localScale, speed * Time.deltaTime);
             yield return null;
         }
         
@@ -85,6 +87,5 @@ public class CopyObject : MonoBehaviour
             clone.transform.position = targetPos;
             Destroy(clone);
         }
-        
     }
 }
