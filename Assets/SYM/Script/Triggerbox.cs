@@ -65,7 +65,9 @@ public class Triggerbox : MonoBehaviour
         if(Player.gameObject.tag =="Trigger")
         { 
           //  히트존으로 보정정
-          playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
+          //playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
+          playerObj.transform.position = Vector3.MoveTowards(playerObj.transform.position, transform.position, playerSpeed * Time.deltaTime);
+
         }
             
             if ( IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 155 < eulerAngY && eulerAngY < 205)

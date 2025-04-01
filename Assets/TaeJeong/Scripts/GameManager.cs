@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gameOverUi;
     [SerializeField] private GameObject timerUi;
     public Slider bgmSlider;
-    private AudioSource audioSource;
     public GameObject optionScreen;
     [HideInInspector] public bool isFinish;
 
@@ -22,7 +21,7 @@ public class GameManager : MonoBehaviour
         //{
             //instance = this;
             //DontDestroyOnLoad(gameObject);
-            audioSource = GetComponent<AudioSource>();
+           
         /*}
         else
         {
@@ -40,12 +39,6 @@ public class GameManager : MonoBehaviour
         }
        
     }
-    
-    public void SoundControl()
-    {
-        audioSource.volume = bgmSlider.value;
-    }
-    
     public void StartScene()
     {
         SceneManager.LoadScene("TaeJeong/Scenes/Whiteboxing");

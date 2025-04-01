@@ -31,7 +31,7 @@ public class PickResize : MonoBehaviour
     Vector3 originalSize;               // 대상의 원래 로컬 스케일
     Vector3 originalBoundSize;          // 대상 Collider의 bounds 사이즈 (순서: x, z, y)
     float originalYRotation;            // 픽업 시 대상과 플레이어 간의 y축 회전 차이
-    private PlayerControllerRb pcs;     // 플레이어 컨트롤러 스크립트 참조
+    private PlayerController pcs;     // 플레이어 컨트롤러 스크립트 참조
     private float initialSens;          // 플레이어의 초기 마우스 민감도 저장
     private Vector3 startDirectionOffset; // 픽업 시 플레이어 forward와 대상 방향 차이 (보간 시작 오프셋)
     private float lerpStart;            // 보간 시작 시간 기록
@@ -46,7 +46,7 @@ public class PickResize : MonoBehaviour
     // 초기 설정: 플레이어 컨트롤러와 마우스 민감도 저장
     void Start()
     {
-        pcs = player.GetComponent<PlayerControllerRb>();
+        pcs = player.GetComponent<PlayerController>();
         initialSens = pcs.mouseSensitivity;
     }
 
