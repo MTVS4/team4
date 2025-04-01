@@ -3,15 +3,17 @@ using UnityEngine;
 
 public class ButtonPressed : MonoBehaviour
 {
-    private Vector3 originalPosition; // 버튼 원래 위치
-    private Vector3 targetPosition;   // 버튼이 이동할 목표 위치
-    public float pressDepth = 0.95f;   // 버튼이 눌리는 깊이
-    public float speed = 5f;          // 이동 속도
-    private bool isPressed = false;   // 버튼이 현재 눌려 있는지 확인
+    public Transform model;
+    private Vector3 originalPosition; 
+    private Vector3 targetPosition;   
+    public float pressDepth = 0.95f;   
+    public float speed = 5f;          
+    private bool isPressed = false; 
+    
 
     void Start()
     {
-        originalPosition = transform.position;
+        originalPosition = model.transform.position;
         targetPosition = originalPosition; // 초기 목표 위치 설정
     }
 
@@ -26,10 +28,11 @@ public class ButtonPressed : MonoBehaviour
         // 버튼에서 물체가 떠났을 때만 원래 위치로 복귀
         isPressed = false;
         targetPosition = originalPosition;
+        Debug.Log("OnTriggerExit");
     }
 
     void Update()
     {
-        transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.deltaTime);
+        model.localPosition = Vector3.Lerp(model.localPosition, targetPosition, speed * Time.deltaTime);
     }
 }

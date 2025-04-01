@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerControllerRb : MonoBehaviour
+public class PlayerControllerRb : PortalTraveller
 {
     private Rigidbody playerRb;
     public float mouseSensitivity = 100f;
@@ -16,6 +16,11 @@ public class PlayerControllerRb : MonoBehaviour
     [SerializeField] private float jumpForce = 8f;
     private bool isGrounded = true;
     private bool isFinish;
+
+    // 위치동기화 변수 
+    Vector3 velocity;
+    public float yaw;
+    float smoothYaw;
 
 
     void Awake()
@@ -139,5 +144,39 @@ public class PlayerControllerRb : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
 
         }
+    }
+
+
+    //  위치 동기화
+      public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot, Vector3 fromPortalScale, Vector3 toPortalScale) {
+        // transform.localScale = transform.localScale * (toPortalScale / fromPortalScale);
+
+
+        // 🔹 1. 기존 크기 저장
+        Vector3 originalScale = transform.localScale;
+
+        // 🔹 2. 피벗을 "바닥 중앙"으로 맞추기 위한 위치 보정 (크기 변경 전에 적용)
+        float heightBefore = originalScale.y;  // 변경 전 높이
+        float heightAfter = heightBefore * (toPortalScale.y / fromPortalScale.y); // 변경 후 예상 높이
+        float heightDifference = (heightAfter - heightBefore) / 2f; // 높이 변화의 절반
+
+        // 위치 보정 (현재 피벗이 중앙이므로 Y축 기준으로 이동)
+        transform.position += new Vector3(0, heightDifference, 0);
+        
+        transform.localScale = new Vector3(
+        transform.localScale.x * (toPortalScale.x / fromPortalScale.x),
+        transform.localScale.y * (toPortalScale.y / fromPortalScale.y),
+        transform.localScale.z * (toPortalScale.z / fromPortalScale.z)
+        );
+
+
+        transform.position = pos;
+        Vector3 eulerRot = rot.eulerAngles;
+        float delta = Mathf.DeltaAngle (smoothYaw, eulerRot.y);
+        yaw += delta;
+        smoothYaw += delta;
+        transform.eulerAngles = Vector3.up * smoothYaw;
+        velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
+        Physics.SyncTransforms ();
     }
 }
