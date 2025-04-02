@@ -117,6 +117,11 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("StartScene");
     }
+
+    public void InGameRestart()
+    {
+        SceneManager.LoadScene("Whiteboxing");
+    }
     
     public void GameFinish()
     {
