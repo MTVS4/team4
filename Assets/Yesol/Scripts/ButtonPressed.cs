@@ -28,7 +28,6 @@ public class ButtonPressed : MonoBehaviour
         // 버튼에서 물체가 떠났을 때만 원래 위치로 복귀
         isPressed = false;
         targetPosition = originalPosition;
-        Debug.Log("OnTriggerExit");
     }
 
     void Update()
