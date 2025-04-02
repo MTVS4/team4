@@ -9,7 +9,6 @@ public class TriggerPawn : MonoBehaviour
   public GameObject fakeDecal;
   public Transform playerObj;
   public GameObject pawn;
-  public GameObject triggerBox;
 
   private float playerSpeed = 2f;
   private float x, z;
@@ -17,7 +16,7 @@ public class TriggerPawn : MonoBehaviour
 
   //  부동소수점 비교 오차 보정 변수
   // private float pointPositonX = 0.51f, pointPositonZ = 1.04f; 원래 좌표
-  private float pointPositonX = -257.48f, pointPositonZ = -15.95f;
+  private float pointPositonX = 268.57f, pointPositonZ = 158.36f;
   private float errorDistance = 0.01f;
 
   [SerializeField]
@@ -30,8 +29,7 @@ public class TriggerPawn : MonoBehaviour
   void Awake()
   {
     pawn.SetActive(false);
-    triggerBox.SetActive(false);
-    fakeDecal.SetActive(true);
+    fakeDecal.SetActive(true); 
   }
 
   void Update()
@@ -55,11 +53,10 @@ public class TriggerPawn : MonoBehaviour
       playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
     }
 
-    if (IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 155 < eulerAngY && eulerAngY < 205)
+    if (IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 68 < eulerAngY && eulerAngY < 118)
     {
       // print("ture");
       pawn.SetActive(true);
-      triggerBox.SetActive(true);
       fakeDecal.SetActive(false);
       Destroy(this.gameObject);
     }

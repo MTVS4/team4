@@ -24,7 +24,7 @@ public class TriggerboxCube : MonoBehaviour
 
   //  부동소수점 비교 오차 보정 변수
   // private float pointPositonX = -1.04f, pointPositonZ = -6.01f;  원래 좌표표
-  private float pointPositonX = -259.04f, pointPositonZ = -23.01f;
+  private float pointPositonX = 273.68f, pointPositonZ = 147.10f;
   private float errorDistance = 0.01f;
 
 
@@ -54,7 +54,7 @@ public class TriggerboxCube : MonoBehaviour
       playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
     }
 
-    if (IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 305f < eulerAngY && eulerAngY < 355)
+    if (IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 5< eulerAngY && eulerAngY < 55)
     {
       // print("ture");
       fakeDecal.SetActive(false);

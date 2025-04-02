@@ -8,6 +8,7 @@ TagManager:
   - Copy
   - Original
   - Ground
+  - Trigger
   layers:
   - Default
   - TransparentFX
@@ -22,7 +23,7 @@ TagManager:
   - Button
   - Ground
   - CopyLayer
-  - 
+  - SSAO
   - 
   - 
   - 
