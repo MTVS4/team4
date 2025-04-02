@@ -36,6 +36,18 @@ public class PlayerController : MonoBehaviour
     
     // 점프 및 중력 적용을 위한 수직 속도를 저장해둘 변수
     private float verticalVelocity = 0f;
+    
+    public AudioClip footstepSound;  // 걸음 효과음 클립
+    public AudioClip landingSound;   // 착지 효과음 클립
+    private AudioSource audioSource;
+    private float footstepTimer;     // 걸음 소리 재생 간격 타이머
+    public float footstepInterval = 0.5f; // 걸음 소리 간격
+
+    // 착지 감지를 위한 이전 지면 상태
+    private bool wasGrounded = true;
+    private bool isJumping = false; 
+    private float jumpStartTime = 0f;  
+    private float fallTime = 0f;
 
     private void Awake()
     {
@@ -62,6 +74,14 @@ public class PlayerController : MonoBehaviour
         //1인칭 캐릭터니까 메인 카메라 플레이어에 받아오기
         cameraTransform = Camera.main.transform;
         
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        // 2D 사운드로 재생 (공간감 없이)
+        audioSource.spatialBlend = 0f;
+        
         //마우스 커서 중앙에 고정, 숨김처리
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Locked;
@@ -69,6 +89,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        
+        bool currentlyGrounded = characterController.isGrounded;
+        
         // 지면과 충돌하는 거 방지
         // 캐릭터가 지면에 있고 , 수직 속도가 음수 ( 내려가는 중 ) 라면
         if (characterController.isGrounded && verticalVelocity < 0)
@@ -111,6 +134,8 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Jump") && characterController.isGrounded)
         {
             verticalVelocity = jumpForce;
+            isJumping = true;
+            jumpStartTime = Time.time; 
         }
 
         // 중력 적용: 매 프레임마다 중력 값을 수직 속도에 더해 자연스러운 낙하 구현
@@ -125,9 +150,51 @@ public class PlayerController : MonoBehaviour
         // 캐릭터 이동 처리
         characterController.Move(move);
 
-      
+        if (currentlyGrounded && move.magnitude > 0.1f)
+        {
+            footstepTimer += Time.deltaTime;
+            if (footstepTimer >= footstepInterval)
+            {
+                if (footstepSound != null)
+                {
+                    audioSource.PlayOneShot(footstepSound);
+                }
+                footstepTimer = 0f;
+            }
+        }
+        else
+        {
+            footstepTimer = 0f;
+        }
 
+        if (!currentlyGrounded)
+        {
+            fallTime += Time.deltaTime;
+        }
+        else
+        {
+            if (!wasGrounded && currentlyGrounded && isJumping)
+            {
+                if (landingSound != null)
+                {
+                    float jumpDuration = Time.time - jumpStartTime;  
+                    float landingVolume = Mathf.Lerp(0.2f, 1.0f, Mathf.InverseLerp(0f, 2f, jumpDuration));
+                    audioSource.PlayOneShot(landingSound, landingVolume);
+                }
+                isJumping = false;
+            }
 
+            if (fallTime > 0.2f && landingSound != null)
+            {
+                float landingVolume = Mathf.Lerp(0.2f, 1.0f, Mathf.InverseLerp(1.0f, 5.0f, fallTime));
+                audioSource.PlayOneShot(landingSound, landingVolume);
+            }
+
+            fallTime = 0f;
+        }
+
+        // 현재 상태를 다음 프레임을 위해 저장
+        wasGrounded = currentlyGrounded;
 
         // 마우스 입력을 통한 화면 회전
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime; // 좌우

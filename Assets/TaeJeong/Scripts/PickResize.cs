@@ -31,7 +31,7 @@ public class PickResize : MonoBehaviour
     Vector3 originalSize;               // 대상의 원래 로컬 스케일
     Vector3 originalBoundSize;          // 대상 Collider의 bounds 사이즈 (순서: x, z, y)
     float originalYRotation;            // 픽업 시 대상과 플레이어 간의 y축 회전 차이
-    private PlayerControllerRb pcs;     // 플레이어 컨트롤러 스크립트 참조
+    private PlayerController pcs;     // 플레이어 컨트롤러 스크립트 참조
     private float initialSens;          // 플레이어의 초기 마우스 민감도 저장
     private Vector3 startDirectionOffset; // 픽업 시 플레이어 forward와 대상 방향 차이 (보간 시작 오프셋)
     private float lerpStart;            // 보간 시작 시간 기록
@@ -42,12 +42,17 @@ public class PickResize : MonoBehaviour
 
     public bool isPick;                 // BlockDoor에서 사용할 물체 잡았는지 확인하는 변수
     public bool isOverlapDoor;
+    
+    public AudioClip pickupSoundClip;  // 픽업 시 재생할 효과음 클립
+    public AudioClip dropSoundClip;    // 드롭 시 재생할 효과음 클립
+    private AudioSource audioSource;   
 
     // 초기 설정: 플레이어 컨트롤러와 마우스 민감도 저장
     void Start()
     {
-        pcs = player.GetComponent<PlayerControllerRb>();
+        pcs = player.GetComponent<PlayerController>();
         initialSens = pcs.mouseSensitivity;
+        audioSource = GetComponent<AudioSource>();
     }
 
     // 매 프레임 입력 처리
@@ -91,6 +96,11 @@ public class PickResize : MonoBehaviour
                 if (hitGround && groundHit.distance < targetHit.distance)
                     return;
                 
+                if (audioSource != null && pickupSoundClip != null)
+                {
+                    audioSource.PlayOneShot(pickupSoundClip);
+                }
+                
                 // 픽업 시작: 보간 시작 시간 기록 및 대상 할당
                 lerpStart = Time.time;
                 target = targetHit.transform;
@@ -124,6 +134,11 @@ public class PickResize : MonoBehaviour
             // 이미 대상이 픽업된 상태이면 드롭(해제) 처리
             else
             {
+                
+                if (audioSource != null && dropSoundClip != null)
+                {
+                    audioSource.PlayOneShot(dropSoundClip);
+                }
                 target.GetComponent<Rigidbody>().isKinematic = false;
                 Physics.IgnoreCollision(target.GetComponent<Collider>(), player.GetComponent<Collider>(), false);
                 Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), false);
