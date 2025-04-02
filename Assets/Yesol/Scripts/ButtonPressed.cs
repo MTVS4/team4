@@ -14,7 +14,7 @@ public class ButtonPressed : MonoBehaviour
     void Start()
     {
         originalPosition = model.transform.position;
-        targetPosition = originalPosition; // 초기 목표 위치 설정
+        targetPosition = originalPosition;
     }
 
     void OnTriggerStay(Collider other)
@@ -25,7 +25,6 @@ public class ButtonPressed : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        // 버튼에서 물체가 떠났을 때만 원래 위치로 복귀
         isPressed = false;
         targetPosition = originalPosition;
     }
