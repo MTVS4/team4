@@ -42,12 +42,17 @@ public class PickResize : MonoBehaviour
 
     public bool isPick;                 // BlockDoor에서 사용할 물체 잡았는지 확인하는 변수
     public bool isOverlapDoor;
+    
+    public AudioClip pickupSoundClip;  // 픽업 시 재생할 효과음 클립
+    public AudioClip dropSoundClip;    // 드롭 시 재생할 효과음 클립
+    private AudioSource audioSource;   
 
     // 초기 설정: 플레이어 컨트롤러와 마우스 민감도 저장
     void Start()
     {
         pcs = player.GetComponent<PlayerController>();
         initialSens = pcs.mouseSensitivity;
+        audioSource = GetComponent<AudioSource>();
     }
 
     // 매 프레임 입력 처리
@@ -91,6 +96,11 @@ public class PickResize : MonoBehaviour
                 if (hitGround && groundHit.distance < targetHit.distance)
                     return;
                 
+                if (audioSource != null && pickupSoundClip != null)
+                {
+                    audioSource.PlayOneShot(pickupSoundClip);
+                }
+                
                 // 픽업 시작: 보간 시작 시간 기록 및 대상 할당
                 lerpStart = Time.time;
                 target = targetHit.transform;
@@ -124,6 +134,11 @@ public class PickResize : MonoBehaviour
             // 이미 대상이 픽업된 상태이면 드롭(해제) 처리
             else
             {
+                
+                if (audioSource != null && dropSoundClip != null)
+                {
+                    audioSource.PlayOneShot(dropSoundClip);
+                }
                 target.GetComponent<Rigidbody>().isKinematic = false;
                 Physics.IgnoreCollision(target.GetComponent<Collider>(), player.GetComponent<Collider>(), false);
                 Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), false);
