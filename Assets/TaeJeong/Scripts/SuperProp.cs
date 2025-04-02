@@ -7,6 +7,7 @@ public class SuperProp : MonoBehaviour
     public bool outline = true;
     public Color pointedColor = new(0f, 0.57f, 1f, 0f);
     public Color holdColor = new(1f, 1f, 1f, 1f);
+    public CameraShake cameraShake;
     
     
     public AudioClip objectDropClip;
@@ -17,6 +18,10 @@ public class SuperProp : MonoBehaviour
         {
             // 충돌한 물체의 위치에서 소리 재생 (3D 감쇠 효과 적용)
             AudioSource.PlayClipAtPoint(objectDropClip, transform.position);
+            if (cameraShake != null && transform.localScale.sqrMagnitude > 27)
+            {
+                cameraShake.TriggerShake(0.1f, 0.1f); // 
+            }
         }
     }
     
