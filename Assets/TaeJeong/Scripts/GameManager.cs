@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject hud;
     [SerializeField] private GameObject gameOverUi;
     [SerializeField] private GameObject timerUi;
+    [SerializeField] private GameObject creditsUi;
+    [SerializeField] private GameObject BGMOptionUi;
     public Slider bgmSlider;
     public GameObject optionScreen;
     [HideInInspector] public bool isFinish;
@@ -39,11 +41,6 @@ public class GameManager : MonoBehaviour
         }
        
     }
-    public void StartScene()
-    {
-        SceneManager.LoadScene("TaeJeong/Scenes/Whiteboxing");
-    }
-
     public void GameExit()
     {
 #if UNITY_EDITOR
@@ -125,5 +122,25 @@ public class GameManager : MonoBehaviour
     {
         gameOverUi.SetActive(true);
         timerUi.SetActive(false);
+    }
+
+    public void CreditUI()
+    {
+        creditsUi.SetActive(true);
+    }
+
+    public void BGMOptionUI()
+    {
+        BGMOptionUi.SetActive(true);
+    }
+
+    public void BGMOptionClose()
+    {
+        BGMOptionUi.SetActive(false);
+    }
+
+    public void OptionClose()
+    {
+        optionScreen.SetActive(false);
     }
 }
