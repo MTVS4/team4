@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
         {
             bool isOptionOpen = IngameOptionUi.activeInHierarchy;
 
-            if (Input.GetKeyDown(KeyCode.C)) 
+            if (Input.GetKeyDown(KeyCode.Escape)) 
             {
                 if (!isOptionOpen) 
                 {
@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
 
     public void InGameRestart()
     {
-        SceneManager.LoadScene("Whiteboxing");
+        SceneManager.LoadScene("LevelDesign");
         GameResume();
     }
     

@@ -14,23 +14,25 @@ public class SuperProp : MonoBehaviour
     public AudioClip objectDropClip;
 
     private BoxCollider boxCollider;
-
+    private MeshCollider meshCollider;
+    
     private void Awake()
     {
         boxCollider = GetComponent<BoxCollider>();
+        meshCollider = GetComponent<MeshCollider>();
     }
     
     
     private void Update()
     {
-        if (playerPick.isPick)
-        {
-            boxCollider.enabled = false;
-        }
-        else
-        {
-            boxCollider.enabled = true;
-        }
+
+            bool isHeld = playerPick.target == transform;
+
+            if (boxCollider != null)
+                boxCollider.enabled = !isHeld;
+
+            if (meshCollider != null)
+                meshCollider.enabled = !isHeld;
     }
 
     void OnCollisionEnter(Collision collision)

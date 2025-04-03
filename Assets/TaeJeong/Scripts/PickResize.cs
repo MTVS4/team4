@@ -10,7 +10,7 @@ public class PickResize : MonoBehaviour
 {
     // 플레이어 관련 참조
     public GameObject player;           // 플레이어 게임오브젝트 참조
-    public Button button;               // 버튼 참조
+    public Button[] buttons;            // 버튼 참조
     public GameManager gameManager;
 
     // 레이어 및 거리 설정
@@ -108,7 +108,14 @@ public class PickResize : MonoBehaviour
 
                 // 대상과 플레이어, 버튼 간 충돌 무시 설정
                 Physics.IgnoreCollision(target.GetComponent<Collider>(), player.GetComponent<Collider>(), true);
-                Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), true);
+                foreach (Button btn in buttons)
+                {
+                    Collider btnCol = btn.GetComponent<Collider>();
+                    if (btnCol != null)
+                    {
+                        Physics.IgnoreCollision(target.GetComponent<Collider>(), btnCol, true);
+                    }
+                }
 
                 // 픽업 시 플레이어와 대상 사이의 방향 오프셋 계산
                 startDirectionOffset = (target.position - transform.position).normalized - transform.forward;
@@ -142,7 +149,15 @@ public class PickResize : MonoBehaviour
                 }
                 target.GetComponent<Rigidbody>().isKinematic = false;
                 Physics.IgnoreCollision(target.GetComponent<Collider>(), player.GetComponent<Collider>(), false);
-                Physics.IgnoreCollision(target.GetComponent<Collider>(), button.GetComponent<Collider>(), false);
+                foreach (Button btn in buttons)
+                {
+                    Collider btnCol = btn.GetComponent<Collider>();
+                    if (btnCol != null)
+                    {
+                        Physics.IgnoreCollision(target.GetComponent<Collider>(), btnCol, false);
+                    }
+                }
+
                 pcs.mouseSensitivity = initialSens;
                 target.gameObject.layer = originalLayer;
                 target = null;
@@ -180,7 +195,7 @@ public class PickResize : MonoBehaviour
         if (target == null)
             return;
         
-        Vector3 targetPos = BoxCast(transform.forward);
+        Vector3 targetPos = BoxCastPosition(transform.forward);
         
         if (isLerping)
         {
@@ -190,7 +205,7 @@ public class PickResize : MonoBehaviour
                 lerpPercentage = 1;
                 isLerping = false; 
             }
-            Vector3 startPos = BoxCast(transform.forward + startDirectionOffset);
+            Vector3 startPos = BoxCastPosition(transform.forward + startDirectionOffset);
             float progress = OutSine(lerpPercentage);
             target.position = Vector3.Lerp(startPos, targetPos, progress);
         }
@@ -223,32 +238,44 @@ public class PickResize : MonoBehaviour
     }
 
     // 박스캐스트로 장애물 보다 앞으로 오도록
-    private Vector3 BoxCast(Vector3 Direction)
+    private Vector3 BoxCastPosition(Vector3 direction)
     {
-        // 초기 박스 중심: 플레이어 위치에서 Direction 방향으로 0.5만큼 떨어진 위치
-        Vector3 boxCenter = Direction * 0.5f + transform.position;
-        Vector3 boxSize;
-        Collider[] collider = new Collider[0];
+        Vector3 origin = transform.position;
+        float distance = maxScaleDistance;
+        Vector3 halfExtents = originalBoundSize * 0.5f;
+        Quaternion rotation = target.rotation;
 
-        // 전진: 충돌(Collider)이 감지될 때까지 이동
-        while (collider.Length == 0)
+        RaycastHit hit;
+
+        // 1. 먼저 앞쪽 박스크래시로 최대 거리 계산
+        if (Physics.BoxCast(origin, halfExtents, direction, out hit, rotation, maxScaleDistance, collisionMask))
         {
-            boxCenter += Direction * (1f / sample);
-            boxSize = CalcScale(boxCenter, originalBoundSize) * 0.5f;
-            collider = Physics.OverlapBox(boxCenter, boxSize, target.rotation, collisionMask);
-            // 최대 거리 초과 시 최대 거리 위치 반환
-            if (Vector3.Distance(transform.position, boxCenter) > maxScaleDistance)
-                return Direction * maxScaleDistance + transform.position;
+            distance = hit.distance - 0.01f;
         }
-        // 역진: 충돌 상태에서 겹침이 해소되는 경계 위치 찾기
-        while (collider.Length != 0)
+
+        Vector3 finalPosition = origin + direction * distance;
+
+        // 2. 최종 위치에 타겟을 두었을 때, 그 자체가 겹치는지 확인
+        // 이게 핵심!! '미리 배치해보고 겹치면 뒤로 빼는 방식'
+        for (int i = 0; i < sample; i++)
         {
-            boxCenter -= Direction * (1f / sample);
-            boxSize = CalcScale(boxCenter, originalBoundSize) * 0.5f;
-            collider = Physics.OverlapBox(boxCenter, boxSize, target.rotation, collisionMask);
+            Vector3 padding = new Vector3(0.01f, 0.01f, 0.01f);
+            bool isOverlap = Physics.CheckBox(finalPosition, halfExtents - padding, rotation, collisionMask);
+
+
+            if (!isOverlap)
+                break;
+
+            // 겹치면 살짝 뒤로
+            finalPosition -= direction * (maxScaleDistance / sample);
         }
-        return boxCenter;
+
+        return finalPosition;
     }
+
+
+
+
     
     
 }

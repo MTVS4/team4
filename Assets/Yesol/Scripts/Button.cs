@@ -33,13 +33,33 @@ public class Button : MonoBehaviour
     {
         closedPosition = door.transform.position;
         
-        if (door.transform.eulerAngles.y < 180 && door.transform.eulerAngles.y > 0)
+        /*
+         if (door.transform.eulerAngles.y < 180 && door.transform.eulerAngles.y > 0)
         {
             openedPosition = closedPosition - new Vector3(0, 0, slideDistance);
         }
         else
         {
             openedPosition = closedPosition - new Vector3(slideDistance, 0, 0);
+        }
+        */
+        
+        float yAngle = door.transform.eulerAngles.y;
+    
+        // (0,0,0)
+        if (Mathf.Approximately(yAngle, 0f))
+        {
+            openedPosition = closedPosition + new Vector3(0, 0, slideDistance);
+        }
+        // -90도 는 270도로 계산됨
+        else if (Mathf.Approximately(yAngle, 270f))
+        {
+            openedPosition = closedPosition - new Vector3(slideDistance, 0, 0);
+        }
+        else
+        {
+            // 그 외
+            openedPosition = closedPosition + new Vector3(0, 0, slideDistance);
         }
         
     }
