@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerControllerRb : PortalTraveller
@@ -21,6 +22,9 @@ public class PlayerControllerRb : PortalTraveller
     Vector3 velocity;
     public float yaw;
     float smoothYaw;
+    private bool isTeleporting = false;
+
+
 
 
     void Awake()
@@ -147,10 +151,10 @@ public class PlayerControllerRb : PortalTraveller
     }
 
 
-    //  위치 동기화
-      public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot, Vector3 fromPortalScale, Vector3 toPortalScale) {
-        // transform.localScale = transform.localScale * (toPortalScale / fromPortalScale);
-
+    public override void Teleport(Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot, Vector3 fromPortalScale, Vector3 toPortalScale)
+    {
+        if (isTeleporting) return;
+        isTeleporting = true;
 
         // 🔹 1. 기존 크기 저장
         Vector3 originalScale = transform.localScale;
@@ -162,21 +166,72 @@ public class PlayerControllerRb : PortalTraveller
 
         // 위치 보정 (현재 피벗이 중앙이므로 Y축 기준으로 이동)
         transform.position += new Vector3(0, heightDifference, 0);
-        
+
+        // 🔹 3. 스케일 동기화 (포탈 간 크기 비율 유지)
         transform.localScale = new Vector3(
-        transform.localScale.x * (toPortalScale.x / fromPortalScale.x),
-        transform.localScale.y * (toPortalScale.y / fromPortalScale.y),
-        transform.localScale.z * (toPortalScale.z / fromPortalScale.z)
+            originalScale.x * (toPortalScale.x / fromPortalScale.x),
+            originalScale.y * (toPortalScale.y / fromPortalScale.y),
+            originalScale.z * (toPortalScale.z / fromPortalScale.z)
         );
 
+        // 🔹 4. "앞→앞" 포탈 방식으로 위치 계산 (거울 효과 적용)
+        // fromPortal 기준 로컬 좌표로 변환 (정확한 거울 반사 효과를 위해)
+        Vector3 localPos = fromPortal.InverseTransformPoint(transform.position);
 
-        transform.position = pos;
-        Vector3 eulerRot = rot.eulerAngles;
-        float delta = Mathf.DeltaAngle (smoothYaw, eulerRot.y);
-        yaw += delta;
-        smoothYaw += delta;
+        // X축만 반전 (왼쪽/오른쪽 반전)
+        localPos.x = -localPos.x;
+
+        // Z축은 부호를 그대로 유지 (앞뒤 관계 유지)
+        // localPos.z = localPos.z;
+
+        // toPortal 기준으로 다시 월드 좌표로 변환
+        Vector3 newPos = toPortal.TransformPoint(localPos);
+
+        // 포탈 앞으로 약간 오프셋 추가 (걸리는 현상 방지)
+        newPos += toPortal.forward * 0.3f;
+
+        // 🔹 5. 위치 이동
+        transform.position = newPos;
+
+        // 🔹 6. 회전 조절 - 거울 반사 효과 적용
+        // fromPortal 기준 로컬 회전으로 변환
+        Quaternion localRot = Quaternion.Inverse(fromPortal.rotation) * transform.rotation;
+
+        // Y축 180도 회전 (앞→앞 관계)
+        localRot = Quaternion.Euler(0, 180, 0) * localRot;
+
+        // toPortal 기준으로 다시 월드 회전으로 변환
+        Quaternion newRot = toPortal.rotation * localRot;
+
+        // Y축 회전만 적용 (Yaw)
+        smoothYaw = newRot.eulerAngles.y;
+        yaw = smoothYaw;
         transform.eulerAngles = Vector3.up * smoothYaw;
-        velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
-        Physics.SyncTransforms ();
+
+        // 🔹 7. 속도 벡터 변환 (거울 반사 효과 적용)
+        Vector3 localVel = fromPortal.InverseTransformDirection(velocity);
+        // X축만 반전 (왼쪽/오른쪽 반전)
+        localVel.x = -localVel.x;
+        // Z축은 유지 (앞뒤 관계 유지)
+        velocity = toPortal.TransformDirection(localVel);
+
+        // 기존 속도의 일부를 유지하여 자연스러운 이동감 제공
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = velocity * 0.8f; // 80% 속도 유지
+        }
+
+        // 🔹 8. 물리 엔진 동기화
+        Physics.SyncTransforms();
+
+        // 잠시 후 텔레포트 상태 해제
+        StartCoroutine(ResetTeleportState());
+    }
+
+    private IEnumerator ResetTeleportState()
+    {
+        yield return new WaitForSeconds(0.2f);
+        isTeleporting = false;
     }
 }

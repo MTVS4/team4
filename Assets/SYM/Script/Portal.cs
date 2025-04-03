@@ -54,4 +54,6 @@ public class Portal : MonoBehaviour
             trackedTravellers.Remove(traveller);
         }
     }
+
+  
 }

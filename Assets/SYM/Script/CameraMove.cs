@@ -43,7 +43,8 @@ public class CameraMove : MonoBehaviour
         // Vector3 toCamera = outTransform.position - portalCameraTransform.position;
         // Plane p = new Plane( toCamera, outTransform.position);
         Vector3 aa = outTransform.position - new Vector3(0,0,-1);
-         Plane p = new Plane( Vector3.Dot(toCamera, outTransform.forward) < 0 ? outTransform.forward : -outTransform.forward, outTransform.position);
+        //  Plane p = new Plane( Vector3.Dot(toCamera, outTransform.forward) < 0 ? outTransform.forward : -outTransform.forward, outTransform.position);
+        Plane p = new Plane( outTransform.forward, outTransform.position);
         Vector4 clipPlaneWorldSpace = new Vector4(p.normal.x, p.normal.y, p.normal.z, p.distance);
 
         

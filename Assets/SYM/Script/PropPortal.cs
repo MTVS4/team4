@@ -5,10 +5,9 @@ public class PropPortal : PortalTraveller
   Vector3 velocity;
   public float yaw;
   float smoothYaw;
-  
+
   public override void Teleport(Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot, Vector3 fromPortalScale, Vector3 toPortalScale)
   {
-   
     // 🔹 1. 기존 크기 저장
     Vector3 originalScale = transform.localScale;
 
@@ -27,18 +26,30 @@ public class PropPortal : PortalTraveller
         originalScale.z * (toPortalScale.z / fromPortalScale.z)
     );
 
-    // 🔹 4. 위치 이동 (포탈을 통해 새로운 위치로 텔레포트)
-    transform.position = pos;
+    // 🔹 4-6. 위치, 회전, 속도 동기화 (앞으로 들어가서 앞으로 나오는 방식)
+    // fromPortal 기준 로컬 좌표로 변환
+    Vector3 localPos = fromPortal.InverseTransformPoint(transform.position);
+    Quaternion localRot = Quaternion.Inverse(fromPortal.rotation) * transform.rotation;
+    Vector3 localVel = fromPortal.InverseTransformDirection(velocity);
 
-    // 🔹 5. 회전 동기화 (Yaw 회전값 보정)
-    Vector3 eulerRot = rot.eulerAngles;
-    float delta = Mathf.DeltaAngle(smoothYaw, eulerRot.y);
-    yaw += delta;
-    smoothYaw += delta;
+    // X와 Z 좌표 반전 (왼쪽/오른쪽, 앞/뒤 반전)
+    localPos.x = -localPos.x;
+    localPos.z = -localPos.z;
+    // 180도 회전 추가 (앞→앞 관계 구현)
+    localRot = Quaternion.Euler(0, 180f, 0) * localRot;
+    // 속도 방향도 반전
+    localVel.x = -localVel.x;
+    localVel.z = -localVel.z;
+
+    // toPortal 기준으로 다시 변환
+    transform.position = toPortal.TransformPoint(localPos);
+    Quaternion newRot = toPortal.rotation * localRot;
+    velocity = toPortal.TransformDirection(localVel);
+
+    // Y축 회전만 적용 (Yaw)
+    smoothYaw = newRot.eulerAngles.y;
+    yaw = smoothYaw;
     transform.eulerAngles = Vector3.up * smoothYaw;
-
-    // 🔹 6. 속도 벡터 변환 (포탈 회전 반영)
-    velocity = toPortal.TransformVector(fromPortal.InverseTransformVector(velocity));
 
     // 🔹 7. 물리 엔진 동기화 (위치 및 회전 적용)
     Physics.SyncTransforms();
