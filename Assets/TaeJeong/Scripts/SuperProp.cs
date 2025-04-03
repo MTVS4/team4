@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,9 +9,30 @@ public class SuperProp : MonoBehaviour
     public Color pointedColor = new(0f, 0.57f, 1f, 0f);
     public Color holdColor = new(1f, 1f, 1f, 1f);
     public CameraShake cameraShake;
-    
+    public PickResize playerPick;
     
     public AudioClip objectDropClip;
+
+    private BoxCollider boxCollider;
+
+    private void Awake()
+    {
+        boxCollider = GetComponent<BoxCollider>();
+    }
+    
+    
+    private void Update()
+    {
+        if (playerPick.isPick)
+        {
+            boxCollider.enabled = false;
+        }
+        else
+        {
+            boxCollider.enabled = true;
+        }
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         float impactForce = collision.relativeVelocity.magnitude;

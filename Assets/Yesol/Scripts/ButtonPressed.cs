@@ -13,8 +13,13 @@ public class ButtonPressed : MonoBehaviour
 
     void Start()
     {
-        originalPosition = model.transform.position;
+        originalPosition = model.transform.localPosition;
         targetPosition = originalPosition;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Enter");
     }
 
     void OnTriggerStay(Collider other)
