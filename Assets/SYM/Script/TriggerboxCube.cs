@@ -11,7 +11,7 @@ public class TriggerboxCube : MonoBehaviour
   public GameObject cube;
   
 
-  private float playerSpeed = 2f;
+  public float playerSpeed = 2f;
   private float x, z;
   private float truncatedx, truncatedz;
 
@@ -25,7 +25,7 @@ public class TriggerboxCube : MonoBehaviour
   //  부동소수점 비교 오차 보정 변수
   // private float pointPositonX = -1.04f, pointPositonZ = -6.01f;  원래 좌표표
   private float pointPositonX = 273.68f, pointPositonZ = 147.10f;
-  private float errorDistance = 0.01f;
+  private float errorDistance = 0.005f;
 
 
   void Awake()
