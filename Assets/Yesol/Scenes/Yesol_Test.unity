@@ -199,7 +199,7 @@ Transform:
   m_GameObject: {fileID: 78248765}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.37, y: 2.31, z: -8.07}
+  m_LocalPosition: {x: 8.25, y: 2.31, z: -8.07}
   m_LocalScale: {x: 0.45199, y: 0.45199, z: 0.45199}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -300,7 +300,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   door: {fileID: 1577613784}
   exit: {fileID: 2074515738}
-  slideDistance: 3
+  slideDistance: 3.2
   slideSpeed: 13
   source: {fileID: 7519120365314989463}
   exitSfx: {fileID: 8300000, guid: 8448049b7c7b40848a6cbef34880db7f, type: 3}
@@ -911,12 +911,8 @@ MonoBehaviour:
   outline: 1
   pointedColor: {r: 0, g: 0.57, b: 1, a: 0}
   holdColor: {r: 1, g: 1, b: 1, a: 1}
-  playerCamera: {fileID: 0}
-  playerPick: {fileID: 0}
-  raycastDistance: 100
-  groundLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
+  cameraShake: {fileID: 0}
+  objectDropClip: {fileID: 0}
 --- !u!114 &1604113934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -945,6 +941,8 @@ MonoBehaviour:
   target: {fileID: 0}
   isPick: 0
   isOverlapDoor: 0
+  pickupSoundClip: {fileID: 0}
+  dropSoundClip: {fileID: 0}
 --- !u!65 &1604113935
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1255,7 +1253,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3348881668393292363, guid: 8640e4c65e1897d479b4cbcf3bcb532a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 27.34
+      value: 10.06
       objectReference: {fileID: 0}
     - target: {fileID: 3348881668393292363, guid: 8640e4c65e1897d479b4cbcf3bcb532a, type: 3}
       propertyPath: m_LocalPosition.y
