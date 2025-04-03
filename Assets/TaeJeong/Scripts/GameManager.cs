@@ -7,40 +7,32 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    [SerializeField] private PlayerControllerRb player;
+    [SerializeField] private PlayerController player;
     [SerializeField] private GameObject hud;
     [SerializeField] private GameObject gameOverUi;
     [SerializeField] private GameObject timerUi;
     [SerializeField] private GameObject creditsUi;
     [SerializeField] private GameObject BGMOptionUi;
+    [SerializeField] private GameObject IngameOptionUi;
     public Slider bgmSlider;
     public GameObject optionScreen;
     [HideInInspector] public bool isFinish;
+    public bool isPlaying;
 
     private void Awake()
     {
-        //if (instance == null)
-        //{
-            //instance = this;
-            //DontDestroyOnLoad(gameObject);
-           
-        /*}
-        else
-        {
-            Destroy(gameObject);
-        }*/
-        
+        isPlaying = true;
+
     }
     
     void Update()
     {
         if (isFinish == false)
         {
-            ExitPopUp();
             InGameESC();
         }
-       
     }
+
     public void GameExit()
     {
 #if UNITY_EDITOR
@@ -50,48 +42,29 @@ public class GameManager : MonoBehaviour
 #endif
     }
 
-    public void PopUpOption()
-    {
-        optionScreen.SetActive(true);
-    }
-    
-    void ExitPopUp()
-    {
-        if (optionScreen.activeInHierarchy && player == null )
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                optionScreen.SetActive(false);
-                Debug.Log("Escape");
-            }
-        }
-    }
-
-    void InGameESC()
+    // 인게임 esc 눌러서 옵션창 띄우기
+    public void InGameESC()
     {
         if (player != null)
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            bool isOptionOpen = IngameOptionUi.activeInHierarchy;
+
+            if (Input.GetKeyDown(KeyCode.C)) 
             {
-                if (optionScreen.activeInHierarchy)
+                if (!isOptionOpen) 
                 {
-                    {
-                        GameResume();
-                        optionScreen.SetActive(false);
-                    }
+                    IngameOptionUi.SetActive(true); 
+                    GamePause(); // 게임 중지
                 }
-                else
+                else 
                 {
-                    GamePause();
-                    optionScreen.SetActive(true);
+                    IngameOptionUi.SetActive(false); 
+                    GameResume(); // 게임 재개
                 }
             }
         }
-        else
-        {
-            return;
-        }
     }
+    
 
     void GamePause()
     {
@@ -101,6 +74,7 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Debug.Log("Pause");
         hud.SetActive(false);
+        isPlaying = false;
     }
 
     void GameResume()
@@ -110,6 +84,7 @@ public class GameManager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         hud.SetActive(true);
+        isPlaying = true;
 
     }
 
@@ -121,6 +96,7 @@ public class GameManager : MonoBehaviour
     public void InGameRestart()
     {
         SceneManager.LoadScene("Whiteboxing");
+        GameResume();
     }
     
     public void GameFinish()

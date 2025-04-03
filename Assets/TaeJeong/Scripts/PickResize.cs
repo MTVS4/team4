@@ -11,6 +11,7 @@ public class PickResize : MonoBehaviour
     // 플레이어 관련 참조
     public GameObject player;           // 플레이어 게임오브젝트 참조
     public Button button;               // 버튼 참조
+    public GameManager gameManager;
 
     // 레이어 및 거리 설정
     public LayerMask targetMask;        // 픽업 대상 레이어
@@ -75,7 +76,7 @@ public class PickResize : MonoBehaviour
     public void HandleInput()
     {
         // 왼쪽 마우스 버튼 클릭 시
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && gameManager.isPlaying)
         {
             // 대상이 아직 픽업되지 않은 경우
             if (target == null)
@@ -152,7 +153,7 @@ public class PickResize : MonoBehaviour
         }
 
         // 오른쪽 마우스 버튼 입력 시 대상 회전 처리
-        if (Input.GetMouseButton(1) && target != null)
+        if (Input.GetMouseButton(1) && target != null && gameManager.isPlaying)
         {
             RotateObj();
         }
