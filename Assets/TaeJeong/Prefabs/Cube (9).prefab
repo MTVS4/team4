@@ -30,13 +30,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2851410182305297284}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.2968908, z: -0, w: 0.9549115}
+  m_LocalRotation: {x: 0, y: 0.2968916, z: 0, w: 0.95491123}
   m_LocalPosition: {x: 43.97, y: 0.93, z: -43.08}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 6.9662, y: 6.9662, z: 6.9662}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 34.542, z: 0}
 --- !u!33 &1642998487779162661
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -105,12 +105,9 @@ MonoBehaviour:
   outline: 1
   pointedColor: {r: 0, g: 0.57, b: 1, a: 0}
   holdColor: {r: 1, g: 1, b: 1, a: 1}
-  playerCamera: {fileID: 0}
+  cameraShake: {fileID: 0}
   playerPick: {fileID: 0}
-  raycastDistance: 100
-  groundLayerMask:
-    serializedVersion: 2
-    m_Bits: 3136
+  objectDropClip: {fileID: 8300000, guid: 9147ef115a2ae4e4ca222ddb0ba6ac70, type: 3}
 --- !u!114 &8672384700864445688
 MonoBehaviour:
   m_ObjectHideFlags: 0
