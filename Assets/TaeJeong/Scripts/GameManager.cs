@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
         {
             bool isOptionOpen = IngameOptionUi.activeInHierarchy;
 
-            if (Input.GetKeyDown(KeyCode.C)) 
+            if (Input.GetKeyDown(KeyCode.Escape)) 
             {
                 if (!isOptionOpen) 
                 {
