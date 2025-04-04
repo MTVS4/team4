@@ -7954,7 +7954,7 @@ PrefabInstance:
       objectReference: {fileID: 203134652}
     - target: {fileID: 3338777006232750759, guid: 49c8e1f2b29f1364caf1fbbf3f2c5dd9, type: 3}
       propertyPath: jumpForce
-      value: 2.5
+      value: 3.4
       objectReference: {fileID: 0}
     - target: {fileID: 3338777006232750759, guid: 49c8e1f2b29f1364caf1fbbf3f2c5dd9, type: 3}
       propertyPath: moveSpeed
@@ -7982,15 +7982,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4045694711127508555, guid: 49c8e1f2b29f1364caf1fbbf3f2c5dd9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 333.34
+      value: 80.74
       objectReference: {fileID: 0}
     - target: {fileID: 4045694711127508555, guid: 49c8e1f2b29f1364caf1fbbf3f2c5dd9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 21.57
+      value: 7.31
       objectReference: {fileID: 0}
     - target: {fileID: 4045694711127508555, guid: 49c8e1f2b29f1364caf1fbbf3f2c5dd9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 153.01
+      value: 112.9
       objectReference: {fileID: 0}
     - target: {fileID: 4045694711127508555, guid: 49c8e1f2b29f1364caf1fbbf3f2c5dd9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -45732,6 +45732,10 @@ PrefabInstance:
     - target: {fileID: 8340074977107757493, guid: 3068391a9b6a07a418358be4a817c984, type: 3}
       propertyPath: m_Name
       value: Button_R4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980742520509140741, guid: 3068391a9b6a07a418358be4a817c984, type: 3}
+      propertyPath: pressDepth
+      value: 0.13
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
