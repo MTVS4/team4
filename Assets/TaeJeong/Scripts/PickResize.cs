@@ -47,7 +47,8 @@ public class PickResize : MonoBehaviour
     public AudioClip pickupSoundClip;  // 픽업 시 재생할 효과음 클립
     public AudioClip dropSoundClip;    // 드롭 시 재생할 효과음 클립
     private AudioSource audioSource;   
-
+    private Collider[] tempColliders = new Collider[100];
+    
     // 초기 설정: 플레이어 컨트롤러와 마우스 민감도 저장
     void Start()
     {
@@ -192,11 +193,11 @@ public class PickResize : MonoBehaviour
     
     private void ResizeTarget()
     {
-        if (target == null)
+        if (target == null || !isPick) // 오브젝트를 놓은 후에는 크기 조정 안 함
             return;
         
         Vector3 targetPos = BoxCastPosition(transform.forward);
-        
+    
         if (isLerping)
         {
             float lerpPercentage = (Time.time - lerpStart) / lerpTime;
@@ -213,10 +214,15 @@ public class PickResize : MonoBehaviour
         {
             target.position = targetPos;
         }
-        // 플레이어와의 거리에 따라 대상 스케일 업데이트
-        target.localScale = CalcScale(target.position, originalSize);
-        
+    
+        // 플레이어와의 거리에 따라 대상 스케일 업데이트 (단, isPick이 true일 때만)
+        if (isPick)
+        {
+            target.localScale = CalcScale(target.position, originalSize);
+        }
     }
+
+
     
     // 새로운 스케일 = (현재 거리 / 초기 거리) × 원래 스케일
     private Vector3 CalcScale(Vector3 tarPos, Vector3 originalSize)
@@ -241,37 +247,41 @@ public class PickResize : MonoBehaviour
     private Vector3 BoxCastPosition(Vector3 direction)
     {
         Vector3 origin = transform.position;
-        float distance = maxScaleDistance;
-        Vector3 halfExtents = originalBoundSize * 0.5f;
         Quaternion rotation = target.rotation;
+        Vector3 halfExtents = originalBoundSize * 0.5f;
+        float safeMargin = 0.001f; // 진짜 미세하게 줄임
+        float minDistance = 0.1f; // 플레이어와 너무 겹치지 않도록 최소 거리 확보
+        float maxStep = 0.005f; // 한 스텝마다 얼마나 미세하게 이동할지
+        int maxAttempts = 30;   // 정밀도 높이려면 반복 횟수 늘리기
 
-        RaycastHit hit;
+        float finalDistance = maxScaleDistance;
 
-        // 1. 먼저 앞쪽 박스크래시로 최대 거리 계산
-        if (Physics.BoxCast(origin, halfExtents, direction, out hit, rotation, maxScaleDistance, collisionMask))
+        // Step 1. 콜리전까지의 거리 측정
+        if (Physics.BoxCast(origin, halfExtents, direction, out RaycastHit hit, rotation, maxScaleDistance, collisionMask, QueryTriggerInteraction.Ignore))
         {
-            distance = hit.distance - 0.01f;
+            finalDistance = Mathf.Max(hit.distance - safeMargin, minDistance);
         }
 
-        Vector3 finalPosition = origin + direction * distance;
+        // Step 2. 해당 위치에서 실제 겹치는지 확인 + 미세 전진
+        Vector3 candidate = origin + direction.normalized * finalDistance;
 
-        // 2. 최종 위치에 타겟을 두었을 때, 그 자체가 겹치는지 확인
-        // 이게 핵심!! '미리 배치해보고 겹치면 뒤로 빼는 방식'
-        for (int i = 0; i < sample; i++)
+        for (int i = 0; i < maxAttempts; i++)
         {
-            Vector3 padding = new Vector3(0.01f, 0.01f, 0.01f);
-            bool isOverlap = Physics.CheckBox(finalPosition, halfExtents - padding, rotation, collisionMask);
+            int count = Physics.OverlapBoxNonAlloc(candidate, halfExtents - Vector3.one * safeMargin, tempColliders, rotation, collisionMask, QueryTriggerInteraction.Ignore);
 
+            if (count == 0)
+                break; // 완벽! 겹치지 않음
 
-            if (!isOverlap)
-                break;
-
-            // 겹치면 살짝 뒤로
-            finalPosition -= direction * (maxScaleDistance / sample);
+            candidate += direction.normalized * maxStep;
         }
 
-        return finalPosition;
+        return candidate;
     }
+
+
+
+
+
 
 
 

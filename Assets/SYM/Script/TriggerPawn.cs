@@ -13,6 +13,7 @@ public class TriggerPawn : MonoBehaviour
   private float playerSpeed = 2f;
   private float x, z;
   private float truncatedx, truncatedz;
+  private CharacterController controller;
 
   //  부동소수점 비교 오차 보정 변수
   // private float pointPositonX = 0.51f, pointPositonZ = 1.04f; 원래 좌표
@@ -30,6 +31,7 @@ public class TriggerPawn : MonoBehaviour
   {
     pawn.SetActive(false);
     fakeDecal.SetActive(true); 
+    controller = playerObj.GetComponent<CharacterController>();
   }
 
   void Update()
@@ -47,10 +49,11 @@ public class TriggerPawn : MonoBehaviour
     truncatedz = Mathf.Floor(z * 100f) / 100f;
 
     
-    if (Player.gameObject.tag == "Trigger")
+    if (Player.gameObject.tag == "Trigger" && controller != null)
     {
-      //  히트존으로 보정정
-      playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
+      // 위치 보정 이동 벡터 계산
+      Vector3 delta = (transform.position - playerObj.position).normalized;
+      controller.Move(delta * Time.deltaTime * playerSpeed);
     }
 
     if (IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 68 < eulerAngY && eulerAngY < 118)

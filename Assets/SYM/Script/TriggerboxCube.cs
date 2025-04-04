@@ -10,6 +10,8 @@ public class TriggerboxCube : MonoBehaviour
   public Transform playerObj;
   public GameObject cube;
   
+  private CharacterController controller;
+  
 
   private float playerSpeed = 2f;
   private float x, z;
@@ -32,6 +34,7 @@ public class TriggerboxCube : MonoBehaviour
   {
     cube.SetActive(false);
     fakeDecal.SetActive(true);
+    controller = playerObj.GetComponent<CharacterController>();
   }
 
   void Update()
@@ -48,10 +51,11 @@ public class TriggerboxCube : MonoBehaviour
     truncatedx = Mathf.Floor(x * 100f) / 100f;
     truncatedz = Mathf.Floor(z * 100f) / 100f;
 
-    if (Player.gameObject.tag == "Trigger")
+    if (Player.gameObject.tag == "Trigger" && controller != null)
     {
-      //  히트존으로 보정정
-      playerObj.transform.position += (transform.position - playerObj.transform.position) * Time.deltaTime * playerSpeed;
+      // 위치 보정 이동 벡터 계산
+      Vector3 delta = (transform.position - playerObj.position).normalized;
+      controller.Move(delta * Time.deltaTime * playerSpeed);
     }
 
     if (IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 5< eulerAngY && eulerAngY < 55)

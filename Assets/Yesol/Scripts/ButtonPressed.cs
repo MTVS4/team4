@@ -10,6 +10,7 @@ public class ButtonPressed : MonoBehaviour
     public float speed = 5f;          
     private bool isPressed = false; 
     
+    
 
     void Start()
     {
@@ -26,6 +27,8 @@ public class ButtonPressed : MonoBehaviour
     {
         isPressed = true;
         targetPosition = originalPosition - new Vector3(0, pressDepth, 0);
+        
+        
     }
 
     void OnTriggerExit(Collider other)
@@ -38,4 +41,9 @@ public class ButtonPressed : MonoBehaviour
     {
         model.localPosition = Vector3.Lerp(model.localPosition, targetPosition, speed * Time.deltaTime);
     }
+    public void ForceExit(Collider other)
+    {
+        OnTriggerExit(other);
+    }
+    
 }

@@ -149,16 +149,14 @@ public class PlayerController : MonoBehaviour
         
         // 캐릭터 이동 처리
         characterController.Move(move);
+        Vector3 horizontalMove = new Vector3(move.x, 0f, move.z);
 
-        if (currentlyGrounded && move.magnitude > 0.1f)
+        if (currentlyGrounded && horizontalMove.magnitude > 0.1f)
         {
             footstepTimer += Time.deltaTime;
             if (footstepTimer >= footstepInterval)
             {
-                if (footstepSound != null)
-                {
-                    audioSource.PlayOneShot(footstepSound);
-                }
+                audioSource.PlayOneShot(footstepSound);
                 footstepTimer = 0f;
             }
         }
@@ -167,31 +165,35 @@ public class PlayerController : MonoBehaviour
             footstepTimer = 0f;
         }
 
-        if (!currentlyGrounded)
+
+        if (currentlyGrounded)
         {
-            fallTime += Time.deltaTime;
-        }
-        else
-        {
-            if (!wasGrounded && currentlyGrounded && isJumping)
+            if (!wasGrounded)
             {
-                if (landingSound != null)
+                // 점프 후 착지한 경우
+                if (isJumping)
                 {
-                    float jumpDuration = Time.time - jumpStartTime;  
-                    float landingVolume = Mathf.Lerp(0.2f, 1.0f, Mathf.InverseLerp(0f, 2f, jumpDuration));
+                    if (landingSound != null)
+                    {
+                        float jumpDuration = Time.time - jumpStartTime;
+                        float landingVolume = Mathf.Lerp(0.2f, 0.6f, Mathf.Clamp01(Mathf.InverseLerp(0.3f, 2.5f, jumpDuration)));
+
+                        audioSource.PlayOneShot(landingSound, landingVolume);
+                    }
+                    isJumping = false;
+                }
+                // 추락 후 착지한 경우
+                else if (fallTime > 0.2f && landingSound != null)
+                {
+                    float landingVolume = Mathf.Lerp(0.2f, 0.6f, Mathf.Clamp01(Mathf.InverseLerp(1.0f, 4.0f, fallTime)));
+
                     audioSource.PlayOneShot(landingSound, landingVolume);
                 }
-                isJumping = false;
-            }
-
-            if (fallTime > 0.2f && landingSound != null)
-            {
-                float landingVolume = Mathf.Lerp(0.2f, 1.0f, Mathf.InverseLerp(1.0f, 5.0f, fallTime));
-                audioSource.PlayOneShot(landingSound, landingVolume);
             }
 
             fallTime = 0f;
         }
+
 
         // 현재 상태를 다음 프레임을 위해 저장
         wasGrounded = currentlyGrounded;

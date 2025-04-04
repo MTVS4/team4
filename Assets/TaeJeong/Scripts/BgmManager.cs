@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BgmManager : MonoBehaviour
 {
     public static BgmManager instance;
     private AudioSource audioSource;
-
+    [SerializeField] private Slider volumeSlider;
     
     private void Awake()
     {
@@ -21,9 +22,28 @@ public class BgmManager : MonoBehaviour
         
         audioSource = GetComponent<AudioSource>();
     }
-
-    public void PlayBgm()
+    private void Start()
     {
-        audioSource.Play();
+        if (volumeSlider != null)
+        {
+            volumeSlider.value = BgmManager.instance.GetVolume(); // 시작값 초기화
+            volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        }
     }
+    
+    private void OnVolumeChanged(float value)
+    {
+        BgmManager.instance.SetVolume(value);
+    }
+    
+    public void SetVolume(float volume)
+    {
+        audioSource.volume = volume;
+    }
+
+    public float GetVolume()
+    {
+        return audioSource.volume;
+    }
+
 }

@@ -63,6 +63,23 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        /*else
+        {
+            bool isOptionOpen = IngameOptionUi.activeInHierarchy;
+            {
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    if (!isOptionOpen) 
+                    {
+                        IngameOptionUi.SetActive(true); 
+                    }
+                    else 
+                    {
+                        IngameOptionUi.SetActive(false); 
+                    }
+                }
+            }
+        }*/
     }
     
 
@@ -123,5 +140,15 @@ public class GameManager : MonoBehaviour
     public void OptionClose()
     {
         optionScreen.SetActive(false);
+    }
+
+    public void CreditClose()
+    {
+        creditsUi.SetActive(false);
+    }
+
+    public void OptionUIOpen()
+    {
+        optionScreen.SetActive(true);
     }
 }

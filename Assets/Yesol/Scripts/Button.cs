@@ -126,6 +126,11 @@ public class Button : MonoBehaviour
     {
         source.PlayOneShot(exitSfx);
     }
+    
+    public void ForceExit(Collider col)
+    {
+        OnTriggerExit(col);
+    }
 }
 
 

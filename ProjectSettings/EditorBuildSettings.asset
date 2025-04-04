@@ -17,9 +17,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/TaeJeong/Scenes/PickTestScene.unity
     guid: 8ffd1bce3787bae4f9a424877713b94f
-  - enabled: 1
+  - enabled: 0
     path: Assets/TaeJeong/Scenes/Whiteboxing.unity
     guid: 0f7c64ade7244f6449755f40ce40e993
+  - enabled: 1
+    path: Assets/SYM/Scene/LevelDesign.unity
+    guid: 5f015ae660038654db1e9c9f01c9a150
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

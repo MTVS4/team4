@@ -16,6 +16,11 @@ public class SuperProp : MonoBehaviour
     private BoxCollider boxCollider;
     private MeshCollider meshCollider;
     
+    
+    private ButtonPressed currentButtonUnderneath;
+    private bool wasColliderEnabled = true;
+    private Button currentButton;
+    
     private void Awake()
     {
         boxCollider = GetComponent<BoxCollider>();
@@ -25,14 +30,34 @@ public class SuperProp : MonoBehaviour
     
     private void Update()
     {
+        bool isHeld = playerPick.target == transform;
 
-            bool isHeld = playerPick.target == transform;
+        if (boxCollider != null)
+            boxCollider.enabled = !isHeld;
 
-            if (boxCollider != null)
-                boxCollider.enabled = !isHeld;
+        if (meshCollider != null)
+            meshCollider.enabled = !isHeld;
 
-            if (meshCollider != null)
-                meshCollider.enabled = !isHeld;
+        // 👇 콜라이더 꺼졌는지 감지하는 부분!
+        bool isColliderNowDisabled = (boxCollider != null && !boxCollider.enabled) ||
+                                     (meshCollider != null && !meshCollider.enabled);
+
+        if (wasColliderEnabled && isColliderNowDisabled)
+        {
+            // 콜라이더가 방금 꺼졌으면 → 버튼에게 직접 알림!
+            if (currentButtonUnderneath != null)
+            {
+                currentButtonUnderneath.ForceExit(GetComponent<Collider>());
+                currentButtonUnderneath = null;
+            }
+            if (currentButton != null)
+            {
+                currentButton.ForceExit(GetComponent<Collider>());
+                currentButton = null;
+            }
+        }
+
+        wasColliderEnabled = !isColliderNowDisabled;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -46,6 +71,20 @@ public class SuperProp : MonoBehaviour
             {
                 cameraShake.TriggerShake(0.1f, 0.1f); // 
             }
+        }
+    }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        ButtonPressed button = other.GetComponent<ButtonPressed>();
+        if (button != null)
+        {
+            currentButtonUnderneath = button;
+        }
+        Button btn = other.GetComponent<Button>();
+        if (btn != null)
+        {
+            currentButton = btn;
         }
     }
     

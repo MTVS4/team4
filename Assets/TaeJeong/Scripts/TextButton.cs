@@ -2,24 +2,24 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TextButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class TextButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    public TextMeshProUGUI buttonText; 
+    public TextMeshProUGUI buttonText;
     public Color normalColor = Color.white;
     public Color highlightColor = Color.yellow;
     public Color pressedColor = Color.gray;
-    
+
     public AudioClip hoverSoundClip;
     private AudioSource audioSource;
+
     void Awake()
     {
-        
         if (buttonText == null)
         {
             buttonText = GetComponent<TextMeshProUGUI>();
         }
         buttonText.color = normalColor;
-        
+
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
@@ -31,7 +31,7 @@ public class TextButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerEnter(PointerEventData eventData)
     {
         buttonText.color = highlightColor;
-        
+
         if (hoverSoundClip != null)
         {
             audioSource.PlayOneShot(hoverSoundClip);
@@ -45,6 +45,7 @@ public class TextButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        Debug.Log("Text Clicked!");
         buttonText.color = pressedColor;
     }
 }
