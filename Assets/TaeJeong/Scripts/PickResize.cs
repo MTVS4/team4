@@ -227,10 +227,17 @@ public class PickResize : MonoBehaviour
     // 새로운 스케일 = (현재 거리 / 초기 거리) × 원래 스케일
     private Vector3 CalcScale(Vector3 tarPos, Vector3 originalSize)
     {
+        float minScale = 0.2f;
+        float maxScale = 6.0f;
         float currentDistance = Vector3.Distance(transform.position, tarPos);
         float scale = currentDistance / originalDistance;
+
+        // Clamp!
+        scale = Mathf.Clamp(scale, minScale, maxScale);
+
         return scale * originalSize;
     }
+
 
     // 오브젝트 회전 시키기
     private void RotateObj()
@@ -248,31 +255,62 @@ public class PickResize : MonoBehaviour
     {
         Vector3 origin = transform.position;
         Quaternion rotation = target.rotation;
-        Vector3 halfExtents = originalBoundSize * 0.5f;
-        float safeMargin = 0.001f; // 진짜 미세하게 줄임
-        float minDistance = 0.1f; // 플레이어와 너무 겹치지 않도록 최소 거리 확보
-        float maxStep = 0.005f; // 한 스텝마다 얼마나 미세하게 이동할지
-        int maxAttempts = 30;   // 정밀도 높이려면 반복 횟수 늘리기
+
+        float safeMargin = 0.001f;
+        float minDistance = 0.05f;
+
+        Collider col = target.GetComponent<Collider>();
+        bool isMesh = col is MeshCollider;
+
+        // 기본 스케일 계산
+        Vector3 scaledBound = CalcScale(origin, originalBoundSize);
+        Vector3 halfExtents = scaledBound * 0.5f;
 
         float finalDistance = maxScaleDistance;
+        RaycastHit hit;
 
-        // Step 1. 콜리전까지의 거리 측정
-        if (Physics.BoxCast(origin, halfExtents, direction, out RaycastHit hit, rotation, maxScaleDistance, collisionMask, QueryTriggerInteraction.Ignore))
+        if (isMesh)
         {
-            finalDistance = Mathf.Max(hit.distance - safeMargin, minDistance);
+            // 👉 MeshCollider일 땐 Raycast로 대체
+            if (Physics.Raycast(origin, direction, out hit, maxScaleDistance, collisionMask, QueryTriggerInteraction.Ignore))
+            {
+                finalDistance = Mathf.Max(hit.distance - safeMargin, minDistance);
+            }
+        }
+        else
+        {
+            // 👉 BoxCollider 등은 BoxCast 사용
+            if (Physics.BoxCast(origin, halfExtents, direction, out hit, rotation, maxScaleDistance, collisionMask, QueryTriggerInteraction.Ignore))
+            {
+                finalDistance = Mathf.Max(hit.distance - safeMargin, minDistance);
+            }
         }
 
-        // Step 2. 해당 위치에서 실제 겹치는지 확인 + 미세 전진
-        Vector3 candidate = origin + direction.normalized * finalDistance;
+        // 외곽 기준으로 위치 조정
+        Vector3 offset = direction.normalized * (halfExtents.z + safeMargin);
+        Vector3 candidate = origin + direction.normalized * finalDistance - offset;
 
-        for (int i = 0; i < maxAttempts; i++)
+        // Overlap 검사는 공통으로 수행
+        int attempts = 30;
+        float adjustStep = 0.01f;
+
+        for (int i = 0; i < attempts; i++)
         {
-            int count = Physics.OverlapBoxNonAlloc(candidate, halfExtents - Vector3.one * safeMargin, tempColliders, rotation, collisionMask, QueryTriggerInteraction.Ignore);
+            scaledBound = CalcScale(candidate, originalBoundSize);
+            halfExtents = scaledBound * 0.5f;
+
+            int count = Physics.OverlapBoxNonAlloc(
+                candidate,
+                halfExtents - Vector3.one * safeMargin,
+                tempColliders,
+                rotation,
+                collisionMask,
+                QueryTriggerInteraction.Ignore);
 
             if (count == 0)
-                break; // 완벽! 겹치지 않음
+                return candidate;
 
-            candidate += direction.normalized * maxStep;
+            candidate -= direction.normalized * adjustStep;
         }
 
         return candidate;
@@ -284,8 +322,5 @@ public class PickResize : MonoBehaviour
 
 
 
-
-
     
-    
-}
+} 

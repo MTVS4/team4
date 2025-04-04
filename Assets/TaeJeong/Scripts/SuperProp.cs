@@ -20,11 +20,13 @@ public class SuperProp : MonoBehaviour
     private ButtonPressed currentButtonUnderneath;
     private bool wasColliderEnabled = true;
     private Button currentButton;
+    private AudioSource audioSource;
     
     private void Awake()
     {
         boxCollider = GetComponent<BoxCollider>();
         meshCollider = GetComponent<MeshCollider>();
+        audioSource = GetComponent<AudioSource>();
     }
     
     
@@ -63,16 +65,12 @@ public class SuperProp : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         float impactForce = collision.relativeVelocity.magnitude;
-        if(impactForce > 4)
+        if (impactForce > 4)
         {
-            // 충돌한 물체의 위치에서 소리 재생 (3D 감쇠 효과 적용)
-            AudioSource.PlayClipAtPoint(objectDropClip, transform.position);
-            if (cameraShake != null && transform.localScale.sqrMagnitude > 27)
-            {
-                cameraShake.TriggerShake(0.1f, 0.1f); // 
-            }
+            audioSource.PlayOneShot(objectDropClip);
         }
     }
+
     
     private void OnTriggerEnter(Collider other)
     {
