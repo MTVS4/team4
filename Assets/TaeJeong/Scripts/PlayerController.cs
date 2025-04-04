@@ -50,11 +50,15 @@ public class PlayerController :PortalTraveller
     private float jumpStartTime = 0f;  
     private float fallTime = 0f;
 
+    private bool isFinish;
+
         // 위치동기화 변수 
     Vector3 velocity;
     public float yaw;
     float smoothYaw;
     private bool isTeleporting = false;
+
+    [SerializeField] private GameManager gameManager;
 
     private void Awake()
     {
@@ -96,7 +100,8 @@ public class PlayerController :PortalTraveller
 
     private void Update()
     {
-        
+        if (!isFinish)
+        {
         bool currentlyGrounded = characterController.isGrounded;
         
         // 지면과 충돌하는 거 방지
@@ -136,6 +141,7 @@ public class PlayerController :PortalTraveller
         {
             move.Normalize();
         }
+        
         
         // "Jump" 버튼(기본 Space) 입력과 함께 지면에 있을 경우 점프
         if (Input.GetButtonDown("Jump") && characterController.isGrounded)
@@ -201,9 +207,11 @@ public class PlayerController :PortalTraveller
             fallTime = 0f;
         }
 
-
+    
         // 현재 상태를 다음 프레임을 위해 저장
         wasGrounded = currentlyGrounded;
+
+        }
 
         // 마우스 입력을 통한 화면 회전
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime; // 좌우
@@ -220,6 +228,8 @@ public class PlayerController :PortalTraveller
         
         // 카메라의 로컬 회전을 업데이트
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+        FallingEnd();
 
     }
 
@@ -305,5 +315,19 @@ public class PlayerController :PortalTraveller
     {
         yield return new WaitForSeconds(0.2f);
         isTeleporting = false;
+    }
+
+
+    void FallingEnd()
+    {
+        if(transform.position.y < 1)
+        {
+            gameManager.GameFinish();
+            isFinish = true;
+            gameManager.isFinish = true;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            Debug.Log("Finish"); 
+        }
     }
 }
