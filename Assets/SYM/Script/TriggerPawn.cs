@@ -56,7 +56,7 @@ public class TriggerPawn : MonoBehaviour
       controller.Move(delta * Time.deltaTime * playerSpeed);
     }
 
-    if (IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 68 < eulerAngY && eulerAngY < 118)
+    if (IsCloseEnough(x, pointPositonX) && IsCloseEnough(z, pointPositonZ) && 5 < eulerAngY && eulerAngY < 55)
     {
       // print("ture");
       pawn.SetActive(true);
