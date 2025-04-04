@@ -5,7 +5,7 @@ public class CopyObject : MonoBehaviour
 {
     public GameObject originObject;
     public float scale = 0.9f; 
-    public float speed = 2f;
+    public float speed;
     
     private void OnMouseOver()
     {
