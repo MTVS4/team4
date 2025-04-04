@@ -13,7 +13,7 @@ public class TriggerboxCube : MonoBehaviour
   private CharacterController controller;
   
 
-  private float playerSpeed = 2f;
+  public float playerSpeed = 2f;
   private float x, z;
   private float truncatedx, truncatedz;
 
