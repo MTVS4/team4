@@ -1,63 +1,57 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
 /// PickResize는 플레이어가 대상 오브젝트를 픽업하여 이동, 크기 조절, 회전할 수 있도록 하는 스크립트입니다.
-/// 대상 픽업 시 해당 오브젝트와 플레이어, 버튼 간 충돌을 무시하고, 픽업 후에는 대상의 위치와 스케일을
-/// 플레이어와의 거리에 따라 조절합니다.
+/// Superliminal 스타일처럼 대상이 벽과 겹치지 않도록 Viewport 기반 Raycast 방식으로 처리됩니다.
 /// </summary>
 public class PickResize : MonoBehaviour
 {
-    // 플레이어 관련 참조
-    public GameObject player;           // 플레이어 게임오브젝트 참조
-    public Button[] buttons;            // 버튼 참조
-    public GameManager gameManager;
-
-    // 레이어 및 거리 설정
-    public LayerMask targetMask;        // 픽업 대상 레이어
-    public LayerMask collisionMask;     // 충돌 검사에 사용할 레이어
-    public int enabledLayer;            // 픽업 후 대상의 레이어로 변경할 값
+    public GameObject player;
+    public Button button;
+    public LayerMask targetMask;
+    public LayerMask collisionMask;
+    public int enabledLayer;
     [Range(50, 1000)]
-    public float maxScaleDistance;      // 대상의 크기 및 위치 계산 시 고려할 최대 거리
-    [Range(8, 256)]
-    public int sample;                  // BoxCast 시 위치를 찾기 위해 사용되는 샘플 횟수
-    public bool enableLerp;             // 대상 이동 시 보간(lerp) 사용 여부
+    public float maxScaleDistance;
+    public bool enableLerp;
     [Range(0, 5)]
-    public float lerpTime;              // 보간 진행 시간
+    public float lerpTime;
 
-    // 상태 저장 및 내부 변수
-    [HideInInspector]
-    public Transform target;            // 현재 픽업되어 조작 중인 대상의 Transform
-    float originalDistance;             // 픽업 시 플레이어와 대상 간 초기 거리
-    Vector3 originalSize;               // 대상의 원래 로컬 스케일
-    Vector3 originalBoundSize;          // 대상 Collider의 bounds 사이즈 (순서: x, z, y)
-    float originalYRotation;            // 픽업 시 대상과 플레이어 간의 y축 회전 차이
-    private PlayerController pcs;     // 플레이어 컨트롤러 스크립트 참조
-    private float initialSens;          // 플레이어의 초기 마우스 민감도 저장
-    private Vector3 startDirectionOffset; // 픽업 시 플레이어 forward와 대상 방향 차이 (보간 시작 오프셋)
-    private float lerpStart;            // 보간 시작 시간 기록
-    private bool isLerping;             // 대상이 보간 중인지 여부
-    private int originalLayer;          // 픽업 전 대상의 레이어 저장
-    private Quaternion rotOffset;       // 회전 오프셋 (현재 코드에서는 사용하지 않음)
-    const float pi = 3.141592653589793238f; // 파이 상수
+    [SerializeField] private int gridRows = 6;
+    [SerializeField] private int gridCols = 6;
 
-    public bool isPick;                 // BlockDoor에서 사용할 물체 잡았는지 확인하는 변수
+    public Transform target;
+    private Vector3 originalSize;
+    private float originalDistance;
+    private float originalYRotation;
+    private Vector3 originalViewportPos;
+    private PlayerController pcs;
+    private float initialSens;
+    private Vector3 startDirectionOffset;
+    private float lerpStart;
+    private bool isLerping;
+    private int originalLayer;
+    private Renderer targetRenderer;
+    private List<Vector3> shapedGrid = new List<Vector3>();
+
+    public bool isPick;
     public bool isOverlapDoor;
-    
-    public AudioClip pickupSoundClip;  // 픽업 시 재생할 효과음 클립
-    public AudioClip dropSoundClip;    // 드롭 시 재생할 효과음 클립
-    private AudioSource audioSource;   
-    private Collider[] tempColliders = new Collider[100];
-    
-    // 초기 설정: 플레이어 컨트롤러와 마우스 민감도 저장
+
+    public AudioClip pickupSoundClip;
+    public AudioClip dropSoundClip;
+    private AudioSource audioSource;
+    private Camera playerCamera;
+
     void Start()
     {
         pcs = player.GetComponent<PlayerController>();
         initialSens = pcs.mouseSensitivity;
         audioSource = GetComponent<AudioSource>();
+        playerCamera = Camera.main;
     }
 
-    // 매 프레임 입력 처리
     void Update()
     {
         if (!isOverlapDoor)
@@ -66,226 +60,190 @@ public class PickResize : MonoBehaviour
         }
     }
 
-    // 모든 Update 후 대상의 위치와 스케일을 조정
     void LateUpdate()
     {
-        ResizeTarget();
-    }
+        if (target == null || targetRenderer == null || playerCamera == null) return;
 
-
-    // HandleInput: 입력에 따라 대상 픽업 및 드롭, 회전 처리를 합니다.
-    public void HandleInput()
-    {
-        // 왼쪽 마우스 버튼 클릭 시
-        if (Input.GetMouseButtonDown(0) && gameManager.isPlaying)
+        try
         {
-            // 대상이 아직 픽업되지 않은 경우
-            if (target == null)
+            Vector3 targetLocalPos = MoveInFrontOfObstacles();
+            if (enableLerp && isLerping)
             {
-                // "Ground" 레이어에 대한 Raycast로 벽이나 바닥을 먼저 탐지하여 대상 선택 방지
-                int groundLayer = LayerMask.NameToLayer("Ground");
-                int groundLayerMask = 1 << groundLayer;
-                RaycastHit groundHit;
-                bool hitGround = Physics.Raycast(transform.position, transform.forward, out groundHit, maxScaleDistance, groundLayerMask);
-                
-                // 픽업 대상 Raycast (targetMask 사용)
-                RaycastHit targetHit;
-                bool hitTarget = Physics.Raycast(transform.position, transform.forward, out targetHit, maxScaleDistance, targetMask);
-                if (!hitTarget)
-                    return;
-                
-                // 만약 지면이 대상보다 먼저 충돌하면 픽업 취소
-                if (hitGround && groundHit.distance < targetHit.distance)
-                    return;
-                
-                if (audioSource != null && pickupSoundClip != null)
-                {
-                    audioSource.PlayOneShot(pickupSoundClip);
-                }
-                
-                // 픽업 시작: 보간 시작 시간 기록 및 대상 할당
-                lerpStart = Time.time;
-                target = targetHit.transform;
-
-                // 대상과 플레이어, 버튼 간 충돌 무시 설정
-                Physics.IgnoreCollision(target.GetComponent<Collider>(), player.GetComponent<Collider>(), true);
-                foreach (Button btn in buttons)
-                {
-                    Collider btnCol = btn.GetComponent<Collider>();
-                    if (btnCol != null)
-                    {
-                        Physics.IgnoreCollision(target.GetComponent<Collider>(), btnCol, true);
-                    }
-                }
-
-                // 픽업 시 플레이어와 대상 사이의 방향 오프셋 계산
-                startDirectionOffset = (target.position - transform.position).normalized - transform.forward;
-                // 대상 Rigidbody를 kinematic으로 전환하여 물리 영향 배제
-                target.GetComponent<Rigidbody>().isKinematic = true;
-                // 픽업 시 플레이어와 대상 간의 초기 거리 및 스케일 저장
-                originalDistance = Vector3.Distance(transform.position, target.position);
-                originalSize = target.localScale;
-
-                // 대상 Collider의 bounds 사이즈 저장 (x, z, y 순서로 재배열)
-                var bound = target.GetComponent<Collider>().bounds.size;
-                originalBoundSize = new Vector3(bound.x, bound.z, bound.y);
-                // 픽업 시점의 y축 회전 차이 저장
-                originalYRotation = target.localEulerAngles.y - transform.localEulerAngles.y;
-                // 대상의 원래 레이어를 저장한 후 픽업 후 레이어로 변경
-                originalLayer = target.gameObject.layer;
-                target.gameObject.layer = enabledLayer;
-                // 보간(lerp) 적용 여부 설정
-                isLerping = enableLerp;
-                
-                // 오브젝트 잡았음
-                isPick = true;
+                float t = (Time.time - lerpStart) / lerpTime;
+                if (t >= 1f) isLerping = false;
+                t = Mathf.Clamp01(t);
+                target.localPosition = Vector3.Lerp(target.localPosition, targetLocalPos, t);
             }
-            // 이미 대상이 픽업된 상태이면 드롭(해제) 처리
             else
             {
-                
-                if (audioSource != null && dropSoundClip != null)
+                target.localPosition = targetLocalPos;
+            }
+
+            float currentDist = (transform.position - target.position).magnitude;
+            if (originalDistance <= 0.01f || float.IsNaN(currentDist) || float.IsInfinity(currentDist)) return;
+
+            float newScale = currentDist / originalDistance;
+            target.localScale = originalSize * newScale;
+
+            Vector3 newWorldPos = playerCamera.ViewportToWorldPoint(new Vector3(
+                originalViewportPos.x, originalViewportPos.y,
+                currentDist));
+
+            if (!float.IsNaN(newWorldPos.x) && !float.IsInfinity(newWorldPos.x))
+                target.position = newWorldPos;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("LateUpdate 오류: " + ex.Message);
+        }
+    }
+
+    public void HandleInput()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (target == null)
+            {
+                RaycastHit hit;
+                if (!Physics.Raycast(transform.position, transform.forward, out hit, maxScaleDistance, targetMask)) return;
+
+                if (audioSource && pickupSoundClip) audioSource.PlayOneShot(pickupSoundClip);
+
+                target = hit.transform;
+                targetRenderer = target.GetComponent<Renderer>();
+                if (targetRenderer == null)
                 {
-                    audioSource.PlayOneShot(dropSoundClip);
+                    Debug.LogError("Renderer가 할당되지 않았습니다. 대상 오브젝트에 Renderer 컴포넌트가 없을 수 있습니다.");
+                    target = null;
+                    return;
                 }
-                target.GetComponent<Rigidbody>().isKinematic = false;
-                Physics.IgnoreCollision(target.GetComponent<Collider>(), player.GetComponent<Collider>(), false);
-                foreach (Button btn in buttons)
+                originalSize = target.localScale;
+                originalDistance = Vector3.Distance(transform.position, target.position);
+                if (originalDistance < 0.01f)
                 {
-                    Collider btnCol = btn.GetComponent<Collider>();
-                    if (btnCol != null)
-                    {
-                        Physics.IgnoreCollision(target.GetComponent<Collider>(), btnCol, false);
-                    }
+                    Debug.LogError("픽업한 대상이 너무 가까워 Viewport 계산이 불안정합니다.");
+                    target = null;
+                    return;
                 }
 
-                pcs.mouseSensitivity = initialSens;
+                if (playerCamera == null)
+                {
+                    Debug.LogError("Main Camera를 찾을 수 없습니다.");
+                    target = null;
+                    return;
+                }
+
+                originalViewportPos = playerCamera.WorldToViewportPoint(target.position);
+                originalYRotation = target.localEulerAngles.y - transform.localEulerAngles.y;
+
+                Rigidbody rb = target.GetComponent<Rigidbody>();
+                if (rb != null) rb.isKinematic = true;
+
+                Collider targetCol = target.GetComponent<Collider>();
+                if (targetCol != null)
+                {
+                    Physics.IgnoreCollision(targetCol, player.GetComponent<Collider>(), true);
+                    Physics.IgnoreCollision(targetCol, button.GetComponent<Collider>(), true);
+                }
+
+                originalLayer = target.gameObject.layer;
+                target.gameObject.layer = enabledLayer;
+
+                isLerping = enableLerp;
+                lerpStart = Time.time;
+                isPick = true;
+
+                SetupGrid();
+            }
+            else
+            {
+                if (audioSource && dropSoundClip) audioSource.PlayOneShot(dropSoundClip);
+                Rigidbody rb = target.GetComponent<Rigidbody>();
+                if (rb != null) rb.isKinematic = false;
+
+                Collider targetCol = target.GetComponent<Collider>();
+                if (targetCol != null)
+                {
+                    Physics.IgnoreCollision(targetCol, player.GetComponent<Collider>(), false);
+                    Physics.IgnoreCollision(targetCol, button.GetComponent<Collider>(), false);
+                }
+
                 target.gameObject.layer = originalLayer;
                 target = null;
-                
-                // 오브젝트 놓았음
                 isPick = false;
             }
         }
 
-        // 오른쪽 마우스 버튼 입력 시 대상 회전 처리
-        if (Input.GetMouseButton(1) && target != null && gameManager.isPlaying)
+        if (Input.GetMouseButton(1) && target != null)
         {
-            RotateObj();
+            pcs.mouseSensitivity = 0;
+            float mouseX = Input.GetAxisRaw("Mouse X") * Time.fixedDeltaTime * initialSens * 10f;
+            target.localEulerAngles = new Vector3(target.localEulerAngles.x,
+                                                  target.localEulerAngles.y - mouseX,
+                                                  target.localEulerAngles.z);
         }
         else if (target != null)
         {
-            // 회전 입력이 없으면 플레이어의 마우스 민감도 복원
             pcs.mouseSensitivity = initialSens;
         }
 
-        // 오른쪽 마우스 버튼 해제 시 회전 기준값 재설정
         if (Input.GetMouseButtonUp(1) && target != null)
         {
             originalYRotation = target.localEulerAngles.y - transform.localEulerAngles.y;
         }
     }
 
-    private float OutSine(float x)
+    private void SetupGrid()
     {
-        return (x > 1f) ? 1f : Mathf.Sin(0.5f * pi * x);
-    }
-    
-    private void ResizeTarget()
-    {
-        if (target == null || !isPick) // 오브젝트를 놓은 후에는 크기 조정 안 함
-            return;
-        
-        Vector3 targetPos = BoxCastPosition(transform.forward);
-    
-        if (isLerping)
+        shapedGrid.Clear();
+        if (playerCamera == null || targetRenderer == null) return;
+
+        for (int i = 0; i < gridRows; i++)
         {
-            float lerpPercentage = (Time.time - lerpStart) / lerpTime;
-            if (lerpPercentage > 1)
+            for (int j = 0; j < gridCols; j++)
             {
-                lerpPercentage = 1;
-                isLerping = false; 
+                float u = (float)i / (gridRows - 1);
+                float v = (float)j / (gridCols - 1);
+                Vector3 viewportPoint = new Vector3(u, v, originalDistance);
+
+                Vector3 worldPoint = playerCamera.ViewportToWorldPoint(viewportPoint);
+                Vector3 dir = worldPoint - playerCamera.transform.position;
+
+                if (dir == Vector3.zero) continue;
+
+                if (Physics.Raycast(playerCamera.transform.position, dir.normalized, out RaycastHit hit, maxScaleDistance, ~targetMask))
+                {
+                    if (hit.collider != null)
+                    {
+                        Vector3 localPoint = playerCamera.transform.InverseTransformPoint(hit.point);
+                        shapedGrid.Add(localPoint);
+                    }
+                }
             }
-            Vector3 startPos = BoxCastPosition(transform.forward + startDirectionOffset);
-            float progress = OutSine(lerpPercentage);
-            target.position = Vector3.Lerp(startPos, targetPos, progress);
-        }
-        else
-        {
-            target.position = targetPos;
-        }
-    
-        // 플레이어와의 거리에 따라 대상 스케일 업데이트 (단, isPick이 true일 때만)
-        if (isPick)
-        {
-            target.localScale = CalcScale(target.position, originalSize);
         }
     }
 
-
-    
-    // 새로운 스케일 = (현재 거리 / 초기 거리) × 원래 스케일
-    private Vector3 CalcScale(Vector3 tarPos, Vector3 originalSize)
+    private Vector3 MoveInFrontOfObstacles()
     {
-        float currentDistance = Vector3.Distance(transform.position, tarPos);
-        float scale = currentDistance / originalDistance;
-        return scale * originalSize;
-    }
-
-    // 오브젝트 회전 시키기
-    private void RotateObj()
-    {
-        // 회전 중에는 플레이어의 마우스 민감도를 0으로 하여 카메라 회전 영향 배제
-        pcs.mouseSensitivity = 0;
-        float mouseX = Input.GetAxisRaw("Mouse X") * Time.fixedDeltaTime * initialSens * 10f;
-        target.localEulerAngles = new Vector3(target.localEulerAngles.x,
-                                               target.localEulerAngles.y - mouseX,
-                                               target.localEulerAngles.z);
-    }
-
-    // 박스캐스트로 장애물 보다 앞으로 오도록
-    private Vector3 BoxCastPosition(Vector3 direction)
-    {
-        Vector3 origin = transform.position;
-        Quaternion rotation = target.rotation;
-        Vector3 halfExtents = originalBoundSize * 0.5f;
-        float safeMargin = 0.001f; // 진짜 미세하게 줄임
-        float minDistance = 0.1f; // 플레이어와 너무 겹치지 않도록 최소 거리 확보
-        float maxStep = 0.005f; // 한 스텝마다 얼마나 미세하게 이동할지
-        int maxAttempts = 30;   // 정밀도 높이려면 반복 횟수 늘리기
-
-        float finalDistance = maxScaleDistance;
-
-        // Step 1. 콜리전까지의 거리 측정
-        if (Physics.BoxCast(origin, halfExtents, direction, out RaycastHit hit, rotation, maxScaleDistance, collisionMask, QueryTriggerInteraction.Ignore))
+        float closestZ = float.MaxValue;
+        foreach (var point in shapedGrid)
         {
-            finalDistance = Mathf.Max(hit.distance - safeMargin, minDistance);
+            Vector3 world = playerCamera.transform.TransformPoint(point);
+            Vector3 dir = world - playerCamera.transform.position;
+            if (dir == Vector3.zero) continue;
+
+            if (Physics.Raycast(playerCamera.transform.position, dir, out RaycastHit hit, maxScaleDistance, collisionMask))
+            {
+                Vector3 local = playerCamera.transform.InverseTransformPoint(hit.point);
+                if (local.z < closestZ) closestZ = local.z;
+            }
         }
 
-        // Step 2. 해당 위치에서 실제 겹치는지 확인 + 미세 전진
-        Vector3 candidate = origin + direction.normalized * finalDistance;
+        if (closestZ == float.MaxValue) closestZ = originalDistance;
 
-        for (int i = 0; i < maxAttempts; i++)
-        {
-            int count = Physics.OverlapBoxNonAlloc(candidate, halfExtents - Vector3.one * safeMargin, tempColliders, rotation, collisionMask, QueryTriggerInteraction.Ignore);
-
-            if (count == 0)
-                break; // 완벽! 겹치지 않음
-
-            candidate += direction.normalized * maxStep;
-        }
-
-        return candidate;
+        float boundsExtent = targetRenderer.bounds.extents.magnitude;
+        Vector3 localPos = target.localPosition;
+        localPos.z = closestZ - boundsExtent;
+        return localPos;
     }
-
-
-
-
-
-
-
-
-
-    
-    
 }
